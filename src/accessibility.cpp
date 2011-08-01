@@ -21,6 +21,17 @@
 
 COMPIZ_PLUGIN_20090315 (accessibility, AccessibilityPluginVTable);
 
+AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
+    PluginClassHandler <AccessibilityScreen, CompScreen> (screen),
+    screen (screen)
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo, "AccessibilityScreen called.\n");
+}
+
+AccessibilityScreen::~AccessibilityScreen ()
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo, "~AccessibilityScreen called.\n");
+}
 
 bool
 AccessibilityPluginVTable::init ()
@@ -31,7 +42,7 @@ AccessibilityPluginVTable::init ()
         return false;
     }
 
-    compLogMessage ("example", CompLogLevelInfo, "Running Accessibility plugin.\n");
+    compLogMessage ("Accessibility", CompLogLevelInfo, "Running Accessibility plugin.\n");
     return true;
 }
 

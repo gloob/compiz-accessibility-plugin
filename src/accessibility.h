@@ -26,12 +26,16 @@
 
 class AccessibilityScreen :
     public PluginClassHandler <AccessibilityScreen, CompScreen>,
-    public ScreenInterface
+    public ScreenInterface,
+    public AccessibilityOptions
 {
     public:
 
         AccessibilityScreen (CompScreen *);
         ~AccessibilityScreen ();
+
+        CompScreen *screen;
+        
         
 };
 
@@ -41,19 +45,5 @@ class AccessibilityPluginVTable :
     public:
 
         bool init();
-        
-};
-
-/* Private definitions */
-
-class DBusConnection
-{
-    public:
-        
-        DBusConnection ();
-        ~DBusConnection ();
-        /*
-        DBusSession connect();
-        */
         
 };

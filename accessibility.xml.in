@@ -5,8 +5,13 @@
         <_long>Activate compatibility with accessibility layer.</_long>
         <category>Accessibility</category>
         <deps>
+            <relation type="after">
+                <plugin>opengl</plugin>
+                <plugin>composite</plugin>
+                <plugin>decor</plugin>
+            </relation>	
         </deps>
         <options>
-        </options>
+        </options>		
     </plugin>
 </compiz>
