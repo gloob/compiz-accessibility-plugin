@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<compiz>
+    <plugin name="accessibility" useBcop="true">
+        <_short>Accessibility</_short>
+        <_long>Activate compatibility with accessibility layer.</_long>
+        <category>Accessibility</category>
+        <deps>
+        </deps>
+        <options>
+        </options>
+    </plugin>
+</compiz>
