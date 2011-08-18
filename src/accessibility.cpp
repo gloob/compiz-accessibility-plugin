@@ -1,7 +1,7 @@
 /*
  * Compiz Accessibility PLugin
  *
- * Copyright (c) 2011 F123.org
+ * Copyright (c) 2011 F123 Consulting & Mais Diferenças
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
