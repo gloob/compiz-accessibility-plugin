@@ -17,10 +17,15 @@
  *
  */
 
+#ifndef _ACCESSIBILITY_H
+#define _ACCESSIBILITY_H
+
 #include <core/core.h>
 #include <core/pluginclasshandler.h>
 
-#include <dbus/dbus.h>
+extern "C" {
+#include <atspi/atspi.h>
+}
 
 #include "accessibility_options.h"
 
@@ -35,8 +40,7 @@ class AccessibilityScreen :
         ~AccessibilityScreen ();
 
         CompScreen *screen;
-        
-        
+                
 };
 
 class AccessibilityPluginVTable :
@@ -47,3 +51,17 @@ class AccessibilityPluginVTable :
         bool init();
         
 };
+
+// Internal and utilities classess
+
+class AtSPIConnector
+{
+    public:
+
+        AtSPIConnector ();
+        ~AtSPIConnector ();
+
+
+};
+
+#endif // _ACCESSIBILITY_H

@@ -1,4 +1,47 @@
 Building
----------------------
+========
 
-sudo apt-get install compiz-dev libboost-dev libboost-all-dev libdbus-1-dev cmake
+* Install development dependencies
+
+$ sudo apt-get install compiz-dev libboost-dev libboost-all-dev libdbus-1-dev \
+  libdbus-glib-1-dev libxi-dev x11proto-record-dev libxtst-dev cmake
+
+* Build AT-SPI 2 from git
+
+- Dependecies
+
+$ sudo apt-get install gtk-doc-tools
+
+- Source code
+
+$ git clone git://git.gnome.org/at-spi2-core
+$ git clone git://git.gnome.org/atk
+$ git clone git://git.gnome.org/at-spi2-atk
+
+- Build
+
+in each of them -> ./autogen --prefix=/usr/local && make install 
+
+More information at http://www.linuxfoundation.org/collaborate/workgroups/accessibility/atk/at-spi/at-spi_on_d-bus
+
+* Launch AT-SPI2
+
+- Set gconf values
+
+$ gconftool-2 --set /desktop/gnome/interface/at-spi-dbus --type bool true
+$ gconftool-2 --set /desktop/gnome/interface/at-spi-corba --type bool false
+
+- Environment variables
+
+export GTK_PATH=/usr/local/lib/gtk-2.0/
+export GTK_MODULES=gail:atk-bridge
+
+- Launch registry
+
+$ /usr/local/libexec/at-spi2-registryd
+
+
+Plugin activation in Compiz
+===========================
+
+$ sudo apt-get install compizconfig-settings-manager

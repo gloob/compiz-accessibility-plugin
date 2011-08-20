@@ -8,4 +8,4 @@ include (CompizPlugin)
 #    -DMETADATADIR=\\\"${compiz_metadatadir}\\\"
 #)
 
-compiz_plugin (accessibility PLUGINDEPS composite PKGDEPS dbus-1)
+compiz_plugin (accessibility PKGDEPS atspi-2)

@@ -25,12 +25,25 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     PluginClassHandler <AccessibilityScreen, CompScreen> (screen),
     screen (screen)
 {
-    compLogMessage ("Accessibility", CompLogLevelInfo, "AccessibilityScreen called.\n");
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "AccessibilityScreen called.\n");
+
+	int atspi_status = atspi_init ();
+	printf ("Starting [atspi status = %i]\n", atspi_status);
+	
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
+
+	atspi_event_main();
 }
 
 AccessibilityScreen::~AccessibilityScreen ()
 {
-    compLogMessage ("Accessibility", CompLogLevelInfo, "~AccessibilityScreen called.\n");
+	atspi_event_quit();
+	int atspi_status = atspi_exit ();
+
+	compLogMessage ("Accessibility", CompLogLevelInfo,
+	                "~AccessibilityScreen called. Exit value: %d\n", atspi_status);
 }
 
 bool
@@ -38,11 +51,14 @@ AccessibilityPluginVTable::init ()
 {
     if (!CompPlugin::checkPluginABI ("core", CORE_ABIVERSION))
     {
-        compLogMessage ("Accessibility", CompLogLevelInfo, "compiz core not in sync.\n");
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "compiz core not in sync.\n");
         return false;
     }
 
-    compLogMessage ("Accessibility", CompLogLevelInfo, "Running Accessibility plugin.\n");
-    return true;
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "Running Accessibility plugin.\n");
+
+	return true;
 }
 
