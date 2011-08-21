@@ -45,3 +45,9 @@ Plugin activation in Compiz
 ===========================
 
 $ sudo apt-get install compizconfig-settings-manager
+
+$ BUILD_GLOBAL=true cmake ../accessibility
+
+$ sudo make install
+
+$ ccsm // Activate it
