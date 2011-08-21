@@ -17,9 +17,6 @@
  *
  */
 
-#ifndef _ACCESSIBILITY_H
-#define _ACCESSIBILITY_H
-
 #include <core/core.h>
 #include <core/pluginclasshandler.h>
 
@@ -27,23 +24,31 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-	
+#endif	
 #include <atspi/atspi.h>
+#ifdef __cplusplus
+}
+#endif
 
+#include <accessibility/accessibility.h>
+#include "accessibility_options.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
 // Event listeners prototypes
 void
 event_listener_generic (const AtspiEvent *event);
 
 void
 event_listener_generic_destroy (void *data);
-	
+
 #ifdef __cplusplus
 }
 #endif
 
-#include "accessibility_options.h"
-
+   
 class AccessibilityScreen :
     public PluginClassHandler <AccessibilityScreen, CompScreen>,
     public ScreenInterface,
@@ -78,5 +83,3 @@ class AtSPIConnector
 
 
 };
-
-#endif // _ACCESSIBILITY_H

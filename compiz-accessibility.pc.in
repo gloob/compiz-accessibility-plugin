@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: compiz-accessibility
+Description: Accessibility (based in AT-SPI2) plugin for compiz
+Version: @VERSION@
+
+Requires: compiz
+Libs: -L${libdir}/compiz -laccessibility
+Cflags: @COMPIZ_CFLAGS@ -I${includedir}/compiz

@@ -17,7 +17,7 @@
  *
  */
 
-#include "accessibility.h"
+#include "private.h"
 
 COMPIZ_PLUGIN_20090315 (accessibility, AccessibilityPluginVTable);
 
@@ -28,6 +28,9 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen called.\n");
 
+    /* TODO: Check atspi_init() code. There's a memory leak when registryd
+     * isn't running.
+     */
     int atspi_status = atspi_init ();
 	
     compLogMessage ("Accessibility", CompLogLevelInfo,
