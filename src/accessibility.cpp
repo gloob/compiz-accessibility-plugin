@@ -21,6 +21,61 @@
 
 COMPIZ_PLUGIN_20090315 (accessibility, AccessibilityPluginVTable);
 
+Accessibility::Accessibility ()
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "Accessibility constructor called.\n");
+
+}
+
+Accessibility::~Accessibility ()
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "Accessibility destructor called.\n");
+
+}
+
+AtspiEventHandler
+Accessibility::registerEventHandler (const char * event_type, AtspiEventCallback cb)
+{
+    AtspiHandler *hnd = new AtspiHandler();
+    if (!hnd)
+        return 0;
+
+    hnd->event_type = event_type;
+    hnd->cb = cb;
+    hnd->id = 0; //priv->lastEventHandler++;
+
+    list.push_front (hnd);
+    return hnd->id;
+}
+
+void
+Accessibility::unregisterEventHandler (AtspiEventHandler handler)
+{
+    std::list<AtspiHandler *>::iterator it;
+    AtspiHandler *h;
+
+    for (it = list.begin (); it != list.end (); it++)
+        if ((*it)->id == handler)
+            break;
+
+    if (it == list.end ())
+        return;
+
+    h = (*it);
+    list.erase (it);
+
+    delete (h);
+}
+
+
+bool
+Accessibility::unregisterByType (const char * event_type) {
+    //TODO
+    return true;
+}
+
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     PluginClassHandler <AccessibilityScreen, CompScreen> (screen),
     screen (screen)
@@ -37,23 +92,30 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
     // Create event listeners
-    GError **error = NULL;
+    GError *error = NULL;
 
     AtspiEventListener *generic_listener = atspi_event_listener_new_simple 
         (event_listener_generic, event_listener_generic_destroy);
+
+    listener = generic_listener;
     
-    atspi_event_listener_register (generic_listener, "object:", error);
+    if (!atspi_event_listener_register (generic_listener, "object:", &error))
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Cannot create event listener. [%s]\n", error->message);
+        
+        g_error_free (error);
+        error = NULL;
+    }
 
-    g_error_free (*error);
-
+    compLogMessage ("Accessibility", CompLogLevelInfo, "Running!\n");
+        
     /*
     // Launch main event atspi loop
     // This is not needed because compiz private screen launches its own
     // Glib MainLoop
     */
     /*
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "Launching main loop\n");
 
     atspi_event_main();
     */
@@ -61,8 +123,18 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
 
 AccessibilityScreen::~AccessibilityScreen ()
 {
-    //atspi_event_quit();
+    GError *error = NULL;
     
+    if (atspi_event_listener_deregister (listener, "object:", &error))
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Cannot unregister event listener. [%s]\n", error->message);
+        
+        g_error_free (error);
+        error = NULL;
+    }
+
+    //atspi_event_quit();
     int atspi_status = atspi_exit ();
 
     compLogMessage ("Accessibility", CompLogLevelInfo,

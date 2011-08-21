@@ -20,14 +20,40 @@
 #ifndef _ACCESSIBILITY_H
 #define _ACCESSIBILITY_H
 
-#define COMPIZ_ACCESSIBILITY_ABI 1
+typedef boost::function<int (const char *)> AtspiEventCallback;
+
+typedef int AtspiEventHandler;
+
+/* Struct of a handler and list of handlers */
+struct AtspiHandler {
+    const char *        event_type;
+    AtspiEventCallback  cb;
+    AtspiEventHandler   id;
+};
+
+typedef std::list<AtspiHandler *> AtspiHandlerList;
+
 
 class Accessibility
 {
     public:
 
-    Accessibility ();
-    ~Accessibility ();
+        AtspiHandlerList list;
+
+    public:
+
+        Accessibility ();
+        ~Accessibility ();
+
+        AtspiEventHandler
+        registerEventHandler (const char * event_type, AtspiEventCallback cb);
+        
+        void
+        unregisterEventHandler (AtspiEventHandler handler);
+
+        bool
+        unregisterByType (const char * event_type);
+
 };      
 
 #endif // _ACCESSIBILITY_H

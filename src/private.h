@@ -60,7 +60,11 @@ class AccessibilityScreen :
         ~AccessibilityScreen ();
 
         CompScreen *screen;
-                
+
+    protected:
+
+        AtspiEventListener *listener;
+
 };
 
 class AccessibilityPluginVTable :
