@@ -28,22 +28,42 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen called.\n");
 
-	int atspi_status = atspi_init ();
-	printf ("Starting [atspi status = %i]\n", atspi_status);
+    int atspi_status = atspi_init ();
 	
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
-	atspi_event_main();
+    // Create event listeners
+    GError **error = NULL;
+
+    AtspiEventListener *generic_listener = atspi_event_listener_new_simple 
+        (event_listener_generic, event_listener_generic_destroy);
+    
+    atspi_event_listener_register (generic_listener, "object:", error);
+
+    g_error_free (*error);
+
+    /*
+    // Launch main event atspi loop
+    // This is not needed because compiz private screen launches its own
+    // Glib MainLoop
+    */
+    /*
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "Launching main loop\n");
+
+    atspi_event_main();
+    */
 }
 
 AccessibilityScreen::~AccessibilityScreen ()
 {
-	atspi_event_quit();
-	int atspi_status = atspi_exit ();
+    //atspi_event_quit();
+    
+    int atspi_status = atspi_exit ();
 
-	compLogMessage ("Accessibility", CompLogLevelInfo,
-	                "~AccessibilityScreen called. Exit value: %d\n", atspi_status);
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "~AccessibilityScreen called. Exit value: %d\n", atspi_status);
 }
 
 bool
@@ -59,6 +79,23 @@ AccessibilityPluginVTable::init ()
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "Running Accessibility plugin.\n");
 
-	return true;
+    return true;
 }
 
+void
+event_listener_generic (const AtspiEvent *event)
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "event->type: %s\n", event->type);
+
+    // object:children-changed:add
+    // source: desktop frame | main
+    // application: none
+}
+
+void
+event_listener_generic_destroy (void *data)
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "event_listener_focus_destroy\n");
+}

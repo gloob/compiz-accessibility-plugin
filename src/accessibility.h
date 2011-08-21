@@ -23,9 +23,24 @@
 #include <core/core.h>
 #include <core/pluginclasshandler.h>
 
+#include <glibmm/main.h>
+
+#ifdef __cplusplus
 extern "C" {
+#endif
+	
 #include <atspi/atspi.h>
+
+// Event listeners prototypes
+void
+event_listener_generic (const AtspiEvent *event);
+
+void
+event_listener_generic_destroy (void *data);
+	
+#ifdef __cplusplus
 }
+#endif
 
 #include "accessibility_options.h"
 
