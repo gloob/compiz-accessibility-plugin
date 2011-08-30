@@ -35,26 +35,52 @@ Accessibility::~Accessibility ()
 
 }
 
-AtspiEventHandler
-Accessibility::registerEventHandler (const char * event_type, AtspiEventCallback cb)
+AccessibilityEventHandler
+Accessibility::registerEventHandler (const char *event_type,
+                                     AccessibilityEventCallback cb)
 {
-    AtspiHandler *hnd = new AtspiHandler();
+
+    AccessibilityHandler *hnd = new AccessibilityHandler();
     if (!hnd)
         return 0;
 
-    hnd->event_type = event_type;
-    hnd->cb = cb;
-    hnd->id = 0; //priv->lastEventHandler++;
+    if (!event_type || !cb)
+        return 0;
+
+    // Create event listeners
+    GError *error = NULL;
+
+    AtspiEventListenerSimpleCB cb_ref = *(cb.target<AtspiEventListenerSimpleCB>());
+    
+    AtspiEventListener *event_listener =
+        atspi_event_listener_new_simple (cb_ref, event_listener_generic_destroy);
+    
+    if (!atspi_event_listener_register (event_listener, event_type, &error))
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Cannot create event listener (%s). [%s]\n",
+                        event_type, 
+                        error->message);
+        
+        g_error_free (error);
+        error = NULL;
+    }
+
+    hnd->event_type     = event_type;
+    hnd->event_listener = event_listener;
+    hnd->cb             = cb;
+    hnd->id             = lastEventHandler++;
 
     list.push_front (hnd);
+
     return hnd->id;
 }
 
 void
-Accessibility::unregisterEventHandler (AtspiEventHandler handler)
+Accessibility::unregisterEventHandler (AccessibilityEventHandler handler)
 {
-    std::list<AtspiHandler *>::iterator it;
-    AtspiHandler *h;
+    std::list<AccessibilityHandler *>::iterator it;
+    AccessibilityHandler *h;
 
     for (it = list.begin (); it != list.end (); it++)
         if ((*it)->id == handler)
@@ -63,6 +89,21 @@ Accessibility::unregisterEventHandler (AtspiEventHandler handler)
     if (it == list.end ())
         return;
 
+    // Unregister event.
+    GError *error = NULL;
+
+    if (atspi_event_listener_deregister ((*it)->event_listener, (*it)->event_type, &error))
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Cannot unregister event listener (%s). [%s]\n",
+                        (*it)->event_type,
+                        error->message);
+        
+        g_error_free (error);
+        error = NULL;
+    }
+
+    // Free and erase from the list.
     h = (*it);
     list.erase (it);
 

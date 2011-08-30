@@ -36,7 +36,7 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 // Event listeners prototypes
 void
 event_listener_generic (const AtspiEvent *event);
@@ -48,7 +48,7 @@ event_listener_generic_destroy (void *data);
 }
 #endif
 
-   
+
 class AccessibilityScreen :
     public PluginClassHandler <AccessibilityScreen, CompScreen>,
     public ScreenInterface,
@@ -65,6 +65,7 @@ class AccessibilityScreen :
 
         AtspiEventListener *listener;
 
+        
 };
 
 class AccessibilityPluginVTable :
