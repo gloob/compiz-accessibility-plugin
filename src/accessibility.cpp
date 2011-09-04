@@ -190,8 +190,29 @@ AccessibilityScreen::unregisterAll ()
 void
 AccessibilityScreen::handleAccessibilityEvent (const AtspiEvent *event)
 {
+    
+    AtspiAccessible *obj = event->source;
+    GValue any_data = event->any_data;
+    GError *error = NULL;
+
+    char * obj_name = atspi_accessible_get_name (obj, &error);
+
+    if (!obj_name)
+        g_error_free (error);
+    else
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "::handleAccessibilityEVent event->source->get_name: %s\n", obj_name);
+    
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "::handleAccessibilityEVent event->type: %s\n", event->type);
+    
+    if (event->detail1)
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "::handleAccessibilityEVent event->detail1: %d\n", event->detail1);
+    if (event->detail2)
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "::handleAccessibilityEVent event->detail2: %d\n", event->detail2);
+    
 }
 
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
@@ -210,28 +231,8 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
-    registerEventHandler ("object:state-changed:focused", boost::bind (
+    registerEventHandler ("object:", boost::bind (
                     &AccessibilityScreen::handleAccessibilityEvent, this, _1));
-
-    /*
-    
-    // Create event listeners
-    GError *error = NULL;
-
-    AtspiEventListener *generic_listener = atspi_event_listener_new_simple 
-        (event_listener_generic, event_listener_generic_destroy);
-
-    listener = generic_listener;
-    
-    if (!atspi_event_listener_register (generic_listener, "object:", &error))
-    {
-        compLogMessage ("Accessibility", CompLogLevelInfo,
-                        "Cannot create event listener. [%s]\n", error->message);
-        
-        g_error_free (error);
-        error = NULL;
-    }
-    */
 
     compLogMessage ("Accessibility", CompLogLevelInfo, "Running!\n");
         
@@ -250,19 +251,6 @@ AccessibilityScreen::~AccessibilityScreen ()
 {
 
     unregisterAll ();
-
-    /*
-    GError *error = NULL;
-    
-    if (atspi_event_listener_deregister (listener, "object:", &error))
-    {
-        compLogMessage ("Accessibility", CompLogLevelInfo,
-                        "Cannot unregister event listener. [%s]\n", error->message);
-        
-        g_error_free (error);
-        error = NULL;
-    }
-    */
     
     //atspi_event_quit();
     int atspi_status = atspi_exit ();
