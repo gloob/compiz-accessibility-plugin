@@ -106,18 +106,6 @@ AccessibilityScreen::registerEventHandler (const char *event_type,
     // Create event listeners
     GError *error = NULL;
 
-    /*
-    compLogMessage ("Accessibility", CompLogLevelInfo, "Me vas a joder cabron!. (1)\n");
-    AccessibilityEventCallback cb_ref = cb.target<void (const AtspiEvent *)>();
-
-    if (!cb_ref)
-    {
-        compLogMessage ("Accessibility", CompLogLevelInfo, "cb_ref es NULL, ostias!\n");
-        return -1;
-    }
-    compLogMessage ("Accessibility", CompLogLevelInfo, "Me vas a joder cabron!. (2)\n");
-    */
-
     AtspiEventListener *event_listener =
         atspi_event_listener_new_simple (staticAccessibilityEventCallback,
                                          event_listener_generic_destroy);
