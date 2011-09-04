@@ -22,14 +22,6 @@
 
 #include <glibmm/main.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif	
-#include <atspi/atspi.h>
-#ifdef __cplusplus
-}
-#endif
-
 #include <accessibility/accessibility.h>
 #include "accessibility_options.h"
 
@@ -39,15 +31,25 @@ extern "C" {
 
 // Event listeners prototypes
 void
-event_listener_generic (const AtspiEvent *event);
-
-void
 event_listener_generic_destroy (void *data);
 
+void
+staticAccessibilityEventCallback (const AtspiEvent*);
 #ifdef __cplusplus
 }
 #endif
 
+typedef int AccessibilityEventHandler;
+
+/* Struct of a handler and list of handlers */
+struct AccessibilityHandler {
+    const char *                event_type;
+    AtspiEventListener *        event_listener;
+    AccessibilityEventCallback  cb;
+    AccessibilityEventHandler   id;
+};
+
+typedef std::list<AccessibilityHandler *> AccessibilityHandlerList;
 
 class AccessibilityScreen :
     public PluginClassHandler <AccessibilityScreen, CompScreen>,
@@ -61,12 +63,36 @@ class AccessibilityScreen :
 
         CompScreen *screen;
 
+        AccessibilityEventHandler
+        registerEventHandler (const char * event_type,
+                              AccessibilityEventCallback cb);
+        
+        void
+        unregisterEventHandler (AccessibilityEventHandler handler);
+
+        bool
+        unregisterByType (const char * event_type);
+
+        void
+        unregisterAll ();
+
+        void
+        handleAccessibilityEvent (const AtspiEvent*);
+
+    public:
+        
+        AccessibilityHandlerList list;
+        int lastEventHandler;
+
     protected:
 
         AtspiEventListener *listener;
-
+        
         
 };
+
+#define ACCESSIBILITY_SCREEN(s) \
+    AccessibilityScreen *as = AccessibilityScreen::get (s)
 
 class AccessibilityPluginVTable :
     public CompPlugin::VTableForScreen <AccessibilityScreen>
@@ -75,16 +101,4 @@ class AccessibilityPluginVTable :
 
         bool init();
         
-};
-
-// Internal and utilities classess
-
-class AtSPIConnector
-{
-    public:
-
-        AtSPIConnector ();
-        ~AtSPIConnector ();
-
-
 };

@@ -35,12 +35,68 @@ Accessibility::~Accessibility ()
 
 }
 
+bool
+Accessibility::start ()
+{
+    return true;
+}
+
+bool
+Accessibility::stop ()
+{
+    return true;
+}
+
+bool
+Accessibility::active ()
+{
+    return true;
+}
+
+bool
+Accessibility::registerEventHandler (const char *event_type, AccessibilityEventCallback cb)
+{
+    ACCESSIBILITY_SCREEN (screen);
+
+    as->registerEventHandler (event_type, cb);
+
+    return true;
+}
+
+void
+Accessibility::unregisterAll ()
+{
+    ACCESSIBILITY_SCREEN (screen);
+
+    as->unregisterAll ();
+}
+
+void
+staticAccessibilityEventCallback (const AtspiEvent *event)
+{
+    ACCESSIBILITY_SCREEN (screen);
+
+    AccessibilityHandlerList list = as->list;
+
+    std::list<AccessibilityHandler *>::iterator it;
+
+    for (it = list.begin (); it != list.end (); it++)
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Delegating (%s) to -> functor [%d][%s]\n",
+                        event->type, 
+                        (*it)->id, (*it)->event_type);
+        (*it)->cb (event);
+    }
+}
+
 AccessibilityEventHandler
-Accessibility::registerEventHandler (const char *event_type,
-                                     AccessibilityEventCallback cb)
+AccessibilityScreen::registerEventHandler (const char *event_type,
+                                           AccessibilityEventCallback cb)
 {
 
-    AccessibilityHandler *hnd = new AccessibilityHandler();
+    AccessibilityHandler *hnd = new AccessibilityHandler ();
+
     if (!hnd)
         return 0;
 
@@ -50,10 +106,21 @@ Accessibility::registerEventHandler (const char *event_type,
     // Create event listeners
     GError *error = NULL;
 
-    AtspiEventListenerSimpleCB cb_ref = *(cb.target<AtspiEventListenerSimpleCB>());
-    
+    /*
+    compLogMessage ("Accessibility", CompLogLevelInfo, "Me vas a joder cabron!. (1)\n");
+    AccessibilityEventCallback cb_ref = cb.target<void (const AtspiEvent *)>();
+
+    if (!cb_ref)
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo, "cb_ref es NULL, ostias!\n");
+        return -1;
+    }
+    compLogMessage ("Accessibility", CompLogLevelInfo, "Me vas a joder cabron!. (2)\n");
+    */
+
     AtspiEventListener *event_listener =
-        atspi_event_listener_new_simple (cb_ref, event_listener_generic_destroy);
+        atspi_event_listener_new_simple (staticAccessibilityEventCallback,
+                                         event_listener_generic_destroy);
     
     if (!atspi_event_listener_register (event_listener, event_type, &error))
     {
@@ -73,12 +140,15 @@ Accessibility::registerEventHandler (const char *event_type,
 
     list.push_front (hnd);
 
+    compLogMessage ("Accessibility", CompLogLevelInfo, "Registered new listener (%d): (%s))\n", hnd->id, hnd->event_type);
+    
     return hnd->id;
 }
 
 void
-Accessibility::unregisterEventHandler (AccessibilityEventHandler handler)
+AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
 {
+    
     std::list<AccessibilityHandler *>::iterator it;
     AccessibilityHandler *h;
 
@@ -112,14 +182,34 @@ Accessibility::unregisterEventHandler (AccessibilityEventHandler handler)
 
 
 bool
-Accessibility::unregisterByType (const char * event_type) {
+AccessibilityScreen::unregisterByType (const char * event_type)
+{
     //TODO
     return true;
 }
 
+void
+AccessibilityScreen::unregisterAll ()
+{
+    std::list<AccessibilityHandler *>::iterator it;
+
+    for (it = list.begin (); it != list.end (); it++)
+    {
+        unregisterEventHandler ((*it)->id);
+    }
+}
+
+void
+AccessibilityScreen::handleAccessibilityEvent (const AtspiEvent *event)
+{
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "::handleAccessibilityEVent event->type: %s\n", event->type);
+}
+
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     PluginClassHandler <AccessibilityScreen, CompScreen> (screen),
-    screen (screen)
+    screen (screen),
+    lastEventHandler (0)
 {
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen called.\n");
@@ -132,6 +222,11 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
+    registerEventHandler ("object:state-changed:focused", boost::bind (
+                    &AccessibilityScreen::handleAccessibilityEvent, this, _1));
+
+    /*
+    
     // Create event listeners
     GError *error = NULL;
 
@@ -148,6 +243,7 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
         g_error_free (error);
         error = NULL;
     }
+    */
 
     compLogMessage ("Accessibility", CompLogLevelInfo, "Running!\n");
         
@@ -164,6 +260,10 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
 
 AccessibilityScreen::~AccessibilityScreen ()
 {
+
+    unregisterAll ();
+
+    /*
     GError *error = NULL;
     
     if (atspi_event_listener_deregister (listener, "object:", &error))
@@ -174,7 +274,8 @@ AccessibilityScreen::~AccessibilityScreen ()
         g_error_free (error);
         error = NULL;
     }
-
+    */
+    
     //atspi_event_quit();
     int atspi_status = atspi_exit ();
 
@@ -196,17 +297,6 @@ AccessibilityPluginVTable::init ()
                     "Running Accessibility plugin.\n");
 
     return true;
-}
-
-void
-event_listener_generic (const AtspiEvent *event)
-{
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "event->type: %s\n", event->type);
-
-    // object:children-changed:add
-    // source: desktop frame | main
-    // application: none
 }
 
 void

@@ -20,19 +20,17 @@
 #ifndef _ACCESSIBILITY_H
 #define _ACCESSIBILITY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif	
+#include <atspi/atspi.h>
+#ifdef __cplusplus
+}
+#endif
+
 typedef boost::function<void (const AtspiEvent *)> AccessibilityEventCallback;
 
-typedef int AccessibilityEventHandler;
-
-/* Struct of a handler and list of handlers */
-struct AccessibilityHandler {
-    const char *                event_type;
-    AtspiEventListener *        event_listener;
-    AccessibilityEventCallback  cb;
-    AccessibilityEventHandler   id;
-};
-
-typedef std::list<AccessibilityHandler *> AccessibilityHandlerList;
+typedef AtspiEvent A11yEvent;
 
 class Accessibility
 {
@@ -41,20 +39,20 @@ class Accessibility
         Accessibility ();
         ~Accessibility ();
 
-        AccessibilityEventHandler
-        registerEventHandler (const char * event_type,
-                              AccessibilityEventCallback cb);
-        
-        void
-        unregisterEventHandler (AccessibilityEventHandler handler);
+        bool
+        start ();
 
         bool
-        unregisterByType (const char * event_type);
+        stop ();
 
-    public:
-        
-        AccessibilityHandlerList list;
-        int lastEventHandler;
+        bool
+        active ();
+
+        bool
+        registerEventHandler (const char *, AccessibilityEventCallback);
+
+        void
+        unregisterAll ();
 
     friend class AccessibilityScreen;
 };      
