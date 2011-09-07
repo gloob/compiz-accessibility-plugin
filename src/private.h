@@ -193,8 +193,6 @@ class AccessibleObject
         Interfaces   interfaces;
 };
 
-
-
 class AccessibilityEvent
 {
     public:
@@ -247,7 +245,7 @@ class AccessibilityScreen :
         unregisterAll ();
 
         void
-        handleAccessibilityEvent (const AtspiEvent*);
+        handleAccessibilityEvent (AccessibilityEvent *);
 
     public:
         

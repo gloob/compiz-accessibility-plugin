@@ -28,7 +28,9 @@ extern "C" {
 }
 #endif
 
-typedef boost::function<void (const AtspiEvent *)> AccessibilityEventCallback;
+class AccessibilityEvent;
+
+typedef boost::function<void (AccessibilityEvent *)> AccessibilityEventCallback;
 
 typedef AtspiEvent A11yEvent;
 

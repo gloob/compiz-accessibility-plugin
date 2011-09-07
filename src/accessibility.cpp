@@ -304,7 +304,8 @@ staticAccessibilityEventCallback (const AtspiEvent *event)
                         "Delegating (%s) to -> functor [%d][%s]\n",
                         event->type, 
                         (*it)->id, (*it)->event_type);
-        (*it)->cb (event);
+        AccessibilityEvent *e = new AccessibilityEvent (event);
+        (*it)->cb (e);
     }
 }
 
@@ -455,25 +456,25 @@ AccessibilityScreen::unregisterAll ()
 }
 
 void
-AccessibilityScreen::handleAccessibilityEvent (const AtspiEvent *event)
+AccessibilityScreen::handleAccessibilityEvent (AccessibilityEvent *event)
 {
     
-    AccessibilityEvent *a11y_event = new AccessibilityEvent (event);
+    //AccessibilityEvent *a11y_event = new AccessibilityEvent (event);
 
-    AccessibleObject *object = a11y_event->getAccessibleObject ();
+    AccessibleObject *object = event->getAccessibleObject ();
 
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent name: %s\n", a11y_event->name);
+                    "::handleAccessibilityEvent name: %s\n", event->name);
     
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent type: %s\n", a11y_event->type);
+                    "::handleAccessibilityEvent type: %s\n", event->type);
     
-    if (a11y_event->detail1)
+    if (event->detail1)
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent detail1: %d\n", a11y_event->detail1);
-    if (a11y_event->detail2)
+                    "::handleAccessibilityEvent detail1: %d\n", event->detail1);
+    if (event->detail2)
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent detail2: %d\n", a11y_event->detail2);
+                    "::handleAccessibilityEvent detail2: %d\n", event->detail2);
 }
 
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
