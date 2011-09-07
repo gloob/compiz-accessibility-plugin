@@ -173,6 +173,34 @@ AccessibilityComponent::is ()
     return Component;
 }
 
+
+AccessibilityText::AccessibilityText (AtspiAccessible *obj) :
+    AccessibilityEntity (obj)
+{
+    text = atspi_accessible_get_text (obj);
+}
+
+AccessibilityText::~AccessibilityText ()
+{
+}
+
+CompRect
+AccessibilityText::getCharacterExtents (int offset) const
+{
+}
+
+CompRect
+AccessibilityText::getRangeExtents (int offset) const
+{
+}
+
+IfaceType
+AccessibilityText::is ()
+{
+    return Text;
+}
+
+
 Accessibility::Accessibility ()
 {
     compLogMessage ("Accessibility", CompLogLevelInfo,

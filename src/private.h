@@ -141,6 +141,27 @@ class AccessibilityComponent :
         AtspiComponent    *component;
 };
 
+class AccessibilityText :
+    public AccessibilityEntity,
+    public AccessibilityObjectInterface
+{
+    public:
+        AccessibilityText (AtspiAccessible *);
+        ~AccessibilityText ();
+
+        CompRect
+        getCharacterExtents (int) const;
+
+        CompRect
+        getRangeExtents (int) const;
+
+        IfaceType
+        is ();
+
+    protected:
+        AtspiText          *text;
+};
+
 class AccessibleObject
 {
     public:        
