@@ -29,6 +29,8 @@
 extern "C" {
 #endif
 
+#include <atspi/atspi.h>
+
 // Event listeners prototypes
 void
 event_listener_generic_destroy (void *data);

@@ -20,19 +20,9 @@
 #ifndef _ACCESSIBILITY_H
 #define _ACCESSIBILITY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif	
-#include <atspi/atspi.h>
-#ifdef __cplusplus
-}
-#endif
-
 class AccessibilityEvent;
 
 typedef boost::function<void (AccessibilityEvent *)> AccessibilityEventCallback;
-
-typedef AtspiEvent A11yEvent;
 
 class Accessibility
 {
