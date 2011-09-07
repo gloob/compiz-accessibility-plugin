@@ -156,6 +156,14 @@ AccessibilityComponent::getPosition () const
     CompPoint position;
     GError *error = NULL;
 
+    AtspiPoint *component_position =
+        atspi_component_get_position (component, ATSPI_COORD_TYPE_SCREEN, &error);
+
+    if (!component_position)
+        g_error_free (error);
+    else
+        position = CompPoint (component_position->x, component_position->y);
+       
     return position;
 }
 
@@ -164,6 +172,13 @@ AccessibilityComponent::getSize () const
 {
     CompPoint size;
     GError *error = NULL;
+
+    AtspiPoint *component_size = atspi_component_get_size (component, &error);
+
+    if (!component_size)
+        g_error_free (error);
+    else
+        size = CompPoint (component_size->x, component_size->y);
 
     return size;
 }
