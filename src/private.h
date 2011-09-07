@@ -205,6 +205,9 @@ class AccessibilityEvent
         bool
         loadEvent (const AtspiEvent *);
 
+        AccessibleObject *
+        getAccessibleObject ();
+
     public:
         AtspiAccessible   *obj;
         char              *name;
@@ -214,6 +217,7 @@ class AccessibilityEvent
 
     private:
         const AtspiEvent  *event;
+        AccessibleObject  *object;
 
 };
 

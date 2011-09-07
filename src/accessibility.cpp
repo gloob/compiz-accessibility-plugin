@@ -335,40 +335,26 @@ AccessibilityEvent::loadEvent (const AtspiEvent *event)
     this->detail1 = event->detail1;
     this->detail2 = event->detail2;
     //this->any_data = GValue any_data = event->any_data;
-
+        
+    this->object = new AccessibleObject (this->obj);
+    
     /*
-    //bool b = ATSPI_TYPE_ACCESSIBLE;
-    AtspiAccessible *accessible = ATSPI_ACCESSIBLE (this->obj);
-    bool is_accessible = ATSPI_IS_ACCESSIBLE (this->obj);
-    //ATSPI_IS_ACCESSIBLE_CLASS(class);
-    AtspiAccessibleClass *accessible_class = ATSPI_ACCESSIBLE_GET_CLASS(this->obj);
+    if (object->is (Component))
+    {
+        AccessibilityComponent *e = dynamic_cast<AccessibilityComponent *> (object->get (Component));
+        compLogMessage ("Accessibility", CompLogLevelInfo, "[]: %d\n.", e->is ());
+        CompRect component_rect = e->getExtents ();
+        compLogMessage ("Accessibility", CompLogLevelInfo, "Event type: %s (Component-extents: [%d, %d] [%d, %d])\n", this->name, component_rect.x1(), component_rect.y1(), component_rect.x2(), component_rect.y2());
+    }
     */
     
-    AtspiComponent *component = atspi_accessible_get_component (this->obj);
-    if (component)
-    {
-        GError *error;
-
-        AtspiRect *rect = atspi_component_get_extents (component, ATSPI_COORD_TYPE_SCREEN, &error);   
-
-        if (!rect)
-        {
-            g_error_free (error);
-            error = NULL;
-        }
-        else
-        {
-            compLogMessage ("Accessibility", CompLogLevelInfo, "Event type: %s (Component-extents: [%d, %d] [%d, %d])\n", this->name, rect->x, rect->y, rect->width, rect->height);
-        }
-    }
-    
-    AccessibleObject *object = new AccessibleObject (this->obj);
-    AccessibilityEntity *e;
-    
-    if ((e = object->get(Component)))
-        compLogMessage ("Accessibility", CompLogLevelInfo, "[]: %d\n.", e->is()); 
-    
     return true;
+}
+
+AccessibleObject *
+AccessibilityEvent::getAccessibleObject ()
+{
+    return object;
 }
 
 AccessibilityEventHandler
@@ -471,32 +457,23 @@ AccessibilityScreen::unregisterAll ()
 void
 AccessibilityScreen::handleAccessibilityEvent (const AtspiEvent *event)
 {
-
     
-    AtspiAccessible *obj = event->source;
-    GValue any_data = event->any_data;
-    GError *error = NULL;
+    AccessibilityEvent *a11y_event = new AccessibilityEvent (event);
 
-    char * obj_name = atspi_accessible_get_name (obj, &error);
+    AccessibleObject *object = a11y_event->getAccessibleObject ();
 
-    if (!obj_name)
-        g_error_free (error);
-    else
-        compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->source->get_name: %s\n", obj_name);
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "::handleAccessibilityEvent name: %s\n", a11y_event->name);
     
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->type: %s\n", event->type);
+                    "::handleAccessibilityEvent type: %s\n", a11y_event->type);
     
-    if (event->detail1)
+    if (a11y_event->detail1)
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->detail1: %d\n", event->detail1);
-    if (event->detail2)
+                    "::handleAccessibilityEvent detail1: %d\n", a11y_event->detail1);
+    if (a11y_event->detail2)
     compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->detail2: %d\n", event->detail2);
-
-    AccessibilityEvent *a11yEvent = new AccessibilityEvent (event);
-    
+                    "::handleAccessibilityEvent detail2: %d\n", a11y_event->detail2);
 }
 
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
