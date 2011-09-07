@@ -175,12 +175,18 @@ class AccessibleObject
         AccessibilityEntity *
         get (IfaceType);
 
+        bool
+        is (IfaceType);
+
     private:
         static AccessibilityEntity *
         instantiate (AtspiAccessible *, char *);
 
         static IfaceType
         enumFromStr (const char *);
+
+        int
+        getIfaceIndex (IfaceType);
 
     private:
         Entities     ents;

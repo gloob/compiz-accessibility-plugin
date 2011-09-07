@@ -89,14 +89,36 @@ AccessibleObject::enumFromStr (const char *str)
 AccessibilityEntity *
 AccessibleObject::get (IfaceType type)
 {
+    int index = getIfaceIndex (type);
+
+    if (index < 0)
+        return NULL;
+
+    return ents[index];
+}
+
+bool
+AccessibleObject::is (IfaceType type)
+{
+    int index = getIfaceIndex (type);
+
+    if (index < 0)
+        return false;
+
+    return true;
+}
+
+int
+AccessibleObject::getIfaceIndex (IfaceType type)
+{
     for (int i = 0; i < (int) ents.size(); i++)
     {
         AccessibilityEntity *e = ents[i];
         if (type == e->is())
-            return ents[i];
+            return i;
     }
 
-    return NULL;
+    return -1;
 }
 
 
