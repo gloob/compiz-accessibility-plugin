@@ -51,6 +51,139 @@ struct AccessibilityHandler {
 
 typedef std::list<AccessibilityHandler *> AccessibilityHandlerList;
 
+
+/*
+ * Class hierarchy that hold and manage differents accessible objects.
+ */
+enum IfaceType
+{
+    Accessible = 0,
+    Action,
+    Collection,
+    Component,
+    Document,
+    EditableText,
+    Hypertext,
+    Hyperlink,
+    Image,
+    Selection,
+    Table,
+    Text,
+    Value,
+};
+
+static const char *IfaceTypeStr[] =
+{
+    "Accessible",
+    "Action",
+    "Collection",
+    "Component",
+    "Document",
+    "EditableText",
+    "Hypertext",
+    "Hyperlink",
+    "Image",
+    "Selection",
+    "Table",
+    "Text",
+    "Value",
+};
+
+#define NUM_IFACES_SUPPORTED 13
+
+class AccessibilityObjectInterface {};
+
+class AccessibilityEntity
+{
+    public:
+        AccessibilityEntity (AtspiAccessible *);
+        ~AccessibilityEntity ();
+
+        virtual bool
+        load (AtspiAccessible *);
+
+        virtual bool
+        contains (AccessibilityEntity *, int, int);
+
+        virtual const char *
+        is ();
+
+    protected:
+        AtspiAccessible   *obj;
+        char              **interfaces;
+};
+
+class AccessibilityComponent :
+    public AccessibilityEntity,
+    public AccessibilityObjectInterface
+{
+    public:
+        AccessibilityComponent (AtspiAccessible *);
+        ~AccessibilityComponent ();
+
+        CompRect
+        getExtents () const;
+        
+        CompPoint
+        getPosition () const;
+
+        CompPoint
+        getSize () const;
+
+        const char *
+        is ();
+
+        /* TODO: Implement based in a compiz layer type.
+        CompLayer
+        getLayer ();
+        */
+    protected:
+        AtspiComponent    *component;
+};
+
+class AccessibleObject
+{
+    public:        
+        typedef std::vector <AccessibilityEntity *> Entities;
+        
+        static AccessibleObject::Entities *
+        create (AtspiAccessible *);
+
+    private:
+        static AccessibilityEntity *
+        instantiate (AtspiAccessible *, char *);
+
+        static IfaceType
+        enumFromStr (const char *);
+
+    //private:
+    //    Entities ents;
+};
+
+
+
+class AccessibilityEvent
+{
+    public:
+        //AccessibilityEvent ();
+        AccessibilityEvent (const AtspiEvent *);
+        ~AccessibilityEvent ();
+
+        bool
+        loadEvent (const AtspiEvent *);
+
+    public:
+        AtspiAccessible   *obj;
+        char              *name;
+        char              *type;
+        int                detail1;
+        int                detail2;
+
+    private:
+        const AtspiEvent  *event;
+
+};
+
 class AccessibilityScreen :
     public PluginClassHandler <AccessibilityScreen, CompScreen>,
     public ScreenInterface,
@@ -87,8 +220,7 @@ class AccessibilityScreen :
     protected:
 
         AtspiEventListener *listener;
-        
-        
+
 };
 
 #define ACCESSIBILITY_SCREEN(s) \
