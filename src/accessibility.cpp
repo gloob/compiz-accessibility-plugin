@@ -21,18 +21,21 @@
 
 COMPIZ_PLUGIN_20090315 (accessibility, AccessibilityPluginVTable);
 
-AccessibleObject::Entities *
+AccessibleObject::AccessibleObject (AtspiAccessible *object)
+{
+    create (object);
+}
+
+AccessibleObject::Entities
 AccessibleObject::create (AtspiAccessible *object)
 {
-    AccessibleObject::Entities *ents = new AccessibleObject::Entities ();
-
     GArray * ifaces = atspi_accessible_get_interfaces (object);
 
     int len = (int) ifaces->len;
 
     for (int i = 0; i < len; i++) {
         char *iface = (char *) g_array_index (ifaces, gchar *,i);
-        ents->push_back (instantiate (object, iface));
+        ents.push_back (instantiate (object, iface));
     }
 
     g_array_free (ifaces, TRUE);
@@ -82,6 +85,20 @@ AccessibleObject::enumFromStr (const char *str)
     return Accessible;
 }
 
+AccessibilityEntity *
+AccessibleObject::get (IfaceType type)
+{
+    for (int i = 0; i < (int) ents.size(); i++)
+    {
+        AccessibilityEntity *e = ents[i];
+        if (type == e->is())
+            return ents[i];
+    }
+
+    return NULL;
+}
+
+
 AccessibilityEntity::AccessibilityEntity (AtspiAccessible *object)
 {
     obj = object;
@@ -99,10 +116,10 @@ AccessibilityEntity::contains (AccessibilityEntity *entity, int x, int y)
     return true;
 }
 
-const char *
+IfaceType
 AccessibilityEntity::is ()
 {
-    return IfaceTypeStr[Accessible];
+    return Accessible;
 }
 
 
@@ -150,10 +167,10 @@ AccessibilityComponent::getSize () const
     return size;
 }
 
-const char *
+IfaceType
 AccessibilityComponent::is ()
 {
-    return IfaceTypeStr[Component];
+    return Component;
 }
 
 Accessibility::Accessibility ()
@@ -249,16 +266,18 @@ AccessibilityEvent::loadEvent (const AtspiEvent *event)
     if (!this->name)
         g_error_free (error);    
     
-    //this->detail1 = event->detail1;
-    //this->detail2 = event->detail2;
+    this->detail1 = event->detail1;
+    this->detail2 = event->detail2;
     //this->any_data = GValue any_data = event->any_data;
-    
+
+    /*
     //bool b = ATSPI_TYPE_ACCESSIBLE;
     AtspiAccessible *accessible = ATSPI_ACCESSIBLE (this->obj);
     bool is_accessible = ATSPI_IS_ACCESSIBLE (this->obj);
     //ATSPI_IS_ACCESSIBLE_CLASS(class);
     AtspiAccessibleClass *accessible_class = ATSPI_ACCESSIBLE_GET_CLASS(this->obj);
-
+    */
+    
     AtspiComponent *component = atspi_accessible_get_component (this->obj);
     if (component)
     {
@@ -273,44 +292,16 @@ AccessibilityEvent::loadEvent (const AtspiEvent *event)
         }
         else
         {
-            // CompRect a = new CompRect (rect->x, rect->y, rect->width, rect->height);
             compLogMessage ("Accessibility", CompLogLevelInfo, "Event type: %s (Component-extents: [%d, %d] [%d, %d])\n", this->name, rect->x, rect->y, rect->width, rect->height);
         }
     }
-
-    //AccessibilityEntity *ae = new AccessibilityEntity (this->obj);
-    AccessibleObject::Entities * entities = AccessibleObject::create (this->obj);
-
-    for (int i = 0; i < (int) entities->size(); i++)
-    {
-        AccessibilityEntity *e = (*entities)[i];
-        compLogMessage ("Accessibility", CompLogLevelInfo, "[%d]: %s\n.", i, e->is()); 
-    }
     
+    AccessibleObject *object = new AccessibleObject (this->obj);
+    AccessibilityEntity *e;
     
-/*        
-    AtspiAccessible *obj = event->source;
-    GValue any_data = event->any_data;
-    GError *error = NULL;
-
-    char * obj_name = atspi_accessible_get_name (obj, &error);
-
-    if (!obj_name)
-        g_error_free (error);
-    else
-        compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->source->get_name: %s\n", obj_name);
+    if ((e = object->get(Component)))
+        compLogMessage ("Accessibility", CompLogLevelInfo, "[]: %d\n.", e->is()); 
     
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->type: %s\n", event->type);
-    
-    if (event->detail1)
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->detail1: %d\n", event->detail1);
-    if (event->detail2)
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEVent event->detail2: %d\n", event->detail2);
-*/
     return true;
 }
 

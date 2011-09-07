@@ -105,7 +105,7 @@ class AccessibilityEntity
         virtual bool
         contains (AccessibilityEntity *, int, int);
 
-        virtual const char *
+        virtual IfaceType
         is ();
 
     protected:
@@ -130,7 +130,7 @@ class AccessibilityComponent :
         CompPoint
         getSize () const;
 
-        const char *
+        IfaceType
         is ();
 
         /* TODO: Implement based in a compiz layer type.
@@ -145,9 +145,14 @@ class AccessibleObject
 {
     public:        
         typedef std::vector <AccessibilityEntity *> Entities;
+
+        AccessibleObject (AtspiAccessible *);
         
-        static AccessibleObject::Entities *
+        AccessibleObject::Entities
         create (AtspiAccessible *);
+
+        AccessibilityEntity *
+        get (IfaceType);
 
     private:
         static AccessibilityEntity *
@@ -156,8 +161,8 @@ class AccessibleObject
         static IfaceType
         enumFromStr (const char *);
 
-    //private:
-    //    Entities ents;
+    private:
+        Entities ents;
 };
 
 
