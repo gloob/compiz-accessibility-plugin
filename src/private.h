@@ -110,7 +110,6 @@ class AccessibilityEntity
 
     protected:
         AtspiAccessible   *obj;
-        char              **interfaces;
 };
 
 class AccessibilityComponent :
@@ -166,6 +165,7 @@ class AccessibleObject
 {
     public:        
         typedef std::vector <AccessibilityEntity *> Entities;
+        typedef std::vector <IfaceType> Interfaces;
 
         AccessibleObject (AtspiAccessible *);
         
@@ -183,7 +183,8 @@ class AccessibleObject
         enumFromStr (const char *);
 
     private:
-        Entities ents;
+        Entities     ents;
+        Interfaces   interfaces;
 };
 
 

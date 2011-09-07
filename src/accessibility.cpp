@@ -35,6 +35,7 @@ AccessibleObject::create (AtspiAccessible *object)
 
     for (int i = 0; i < len; i++) {
         char *iface = (char *) g_array_index (ifaces, gchar *,i);
+        interfaces.push_back (enumFromStr (iface));
         ents.push_back (instantiate (object, iface));
     }
 
@@ -45,7 +46,7 @@ AccessibleObject::create (AtspiAccessible *object)
 
 AccessibilityEntity *
 AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
-{       
+{
     AccessibilityEntity *entity;
     int iface_id = (int) enumFromStr(iface);
     
