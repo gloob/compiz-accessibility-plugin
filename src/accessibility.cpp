@@ -34,7 +34,9 @@ AccessibleObject::create (AtspiAccessible *object)
     int len = (int) ifaces->len;
 
     for (int i = 0; i < len; i++) {
-        char *iface = (char *) g_array_index (ifaces, gchar *,i);
+
+        char *iface = (char *) g_array_index (ifaces, gchar *, i);
+
         interfaces.push_back (enumFromStr (iface));
         ents.push_back (instantiate (object, iface));
     }
@@ -218,18 +220,57 @@ AccessibilityText::AccessibilityText (AtspiAccessible *obj) :
     text = atspi_accessible_get_text (obj);
 }
 
-AccessibilityText::~AccessibilityText ()
-{
-}
-
 CompRect
 AccessibilityText::getCharacterExtents (int offset) const
 {
+    CompRect rect;
+    GError *error = NULL;
+
+    AtspiRect *character_rect = atspi_text_get_character_extents
+        (text, offset, ATSPI_COORD_TYPE_SCREEN, &error);
+
+    if (!character_rect)
+        g_error_free (error);
+    else
+        rect = CompRect (character_rect->x,
+                         character_rect->y,
+                         character_rect->width,
+                         character_rect->height);
+
+    return rect;
 }
 
 CompRect
 AccessibilityText::getRangeExtents (int offset) const
 {
+    CompRect rect;
+    GError *error = NULL;
+
+    AtspiRect *range_rect = atspi_text_get_range_extents
+        (text, 0, 0, ATSPI_COORD_TYPE_SCREEN, &error);
+
+    if (!range_rect)
+        g_error_free (error);
+    else
+        rect = CompRect (range_rect->x,
+                         range_rect->y,
+                         range_rect->width,
+                         range_rect->height);
+
+    return rect;
+}
+
+int
+AccessibilityText::getCaretOffset ()
+{
+    GError *error = NULL;
+    
+    int caret_offset = atspi_text_get_caret_offset (text, &error);
+
+    if (!caret_offset)
+        g_error_free (error);
+
+    return caret_offset;
 }
 
 IfaceType
@@ -476,10 +517,8 @@ AccessibilityScreen::unregisterAll ()
 void
 AccessibilityScreen::handleAccessibilityEvent (AccessibilityEvent *event)
 {
-    
-    //AccessibilityEvent *a11y_event = new AccessibilityEvent (event);
 
-    AccessibleObject *object = event->getAccessibleObject ();
+    //AccessibleObject *object = event->getAccessibleObject ();
 
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "::handleAccessibilityEvent name: %s\n", event->name);

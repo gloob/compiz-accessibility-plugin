@@ -111,6 +111,9 @@ class AccessibilityText :
         CompRect
         getRangeExtents (int) const;
 
+        int
+        getCaretOffset ();
+
         IfaceType
         is ();
 
