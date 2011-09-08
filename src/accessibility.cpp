@@ -56,7 +56,11 @@ AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
 
         case Component:
             entity = new AccessibilityComponent (object);
-        break;
+            break;
+
+        case Text:
+            entity = new AccessibilityText (object);
+            break;
 
         case Accessible:
         case Action:
@@ -67,11 +71,11 @@ AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
         case Hyperlink:
         case Image:
         case Selection:
-        case Table:
-        case Text:
+        case Table:    
         case Value:
         default:
-            entity = new AccessibilityEntity (object);
+            entity = NULL;
+            //entity = new AccessibilityEntity (object);
     }
 
     return entity;
