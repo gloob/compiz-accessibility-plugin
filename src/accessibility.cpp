@@ -467,6 +467,9 @@ AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
     std::list<AccessibilityHandler *>::iterator it;
     AccessibilityHandler *h;
 
+    if (list.size() < 0)
+        return;
+        
     for (it = list.begin (); it != list.end (); it++)
         if ((*it)->id == handler)
             break;
@@ -477,7 +480,7 @@ AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
     // Unregister event.
     GError *error = NULL;
 
-    if (atspi_event_listener_deregister ((*it)->event_listener, (*it)->event_type, &error))
+    if (!atspi_event_listener_deregister ((*it)->event_listener, (*it)->event_type, &error))
     {
         compLogMessage ("Accessibility", CompLogLevelInfo,
                         "Cannot unregister event listener (%s). [%s]\n",
@@ -490,9 +493,9 @@ AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
 
     // Free and erase from the list.
     h = (*it);
-    list.erase (it);
-
     delete (h);
+    
+    list.erase (it);
 }
 
 
@@ -507,6 +510,9 @@ void
 AccessibilityScreen::unregisterAll ()
 {
     std::list<AccessibilityHandler *>::iterator it;
+
+    if (list.size () < 0)
+        return;
 
     for (it = list.begin (); it != list.end (); it++)
     {
