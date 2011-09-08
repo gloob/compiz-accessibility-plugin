@@ -309,6 +309,24 @@ staticAccessibilityEventCallback (const AtspiEvent *event)
     }
 }
 
+void
+staticAccessibilityEventDestroyCallback (void *data)
+{
+    ACCESSIBILITY_SCREEN (screen);
+
+    AccessibilityHandlerList list = as->list;
+
+    std::list<AccessibilityHandler *>::iterator it;
+
+    for (it = list.begin (); it != list.end (); it++)
+    {
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Delegating destroy to -> functor [%d][%s]\n",
+                        (*it)->id);
+        // TODO: Implement callback mechanism for handles destroy.
+    }
+}
+
 AccessibilityEvent::AccessibilityEvent (const AtspiEvent *event)
 {
     this->loadEvent (event);    
@@ -376,7 +394,7 @@ AccessibilityScreen::registerEventHandler (const char *event_type,
 
     AtspiEventListener *event_listener =
         atspi_event_listener_new_simple (staticAccessibilityEventCallback,
-                                         event_listener_generic_destroy);
+                                         staticAccessibilityEventDestroyCallback);
     
     if (!atspi_event_listener_register (event_listener, event_type, &error))
     {
@@ -535,11 +553,4 @@ AccessibilityPluginVTable::init ()
                     "Running Accessibility plugin.\n");
 
     return true;
-}
-
-void
-event_listener_generic_destroy (void *data)
-{
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "event_listener_focus_destroy\n");
 }
