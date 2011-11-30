@@ -1,5 +1,11 @@
-Building
-========
+This plugin is based on libatspi which is based in AT-SPI2 architecture.
+If you're using a system with the old accessibility system based on CORBA
+you need to compile and execute the needed infrastructure for libatspi.
+
+Build AT-SPI2 infrastructure
+============================
+
+(Only needed if your system don't integrate this)
 
 * Install development dependencies
 
@@ -22,7 +28,8 @@ $ git clone git://git.gnome.org/at-spi2-atk
 
 in each of them -> ./autogen --prefix=/usr/local && make install 
 
-More information at http://www.linuxfoundation.org/collaborate/workgroups/accessibility/atk/at-spi/at-spi_on_d-bus
+More information at
+http://www.linuxfoundation.org/collaborate/workgroups/accessibility/atk/at-spi/at-spi_on_d-bus
 
 * Launch AT-SPI2
 
@@ -41,13 +48,25 @@ export GTK_MODULES=gail:atk-bridge
 $ /usr/local/libexec/at-spi2-registryd
 
 
-Plugin activation in Compiz
-===========================
+Build Compiz Accessibility Plugin
+=================================
 
-$ sudo apt-get install compizconfig-settings-manager
+- Clone the source code for the accessibility plugin
+(cloned by default into compiz-accesibility-plugin directory)
 
-$ BUILD_GLOBAL=true cmake ../accessibility
+$ git clone git://github.com/gloob/compiz-accessibility-plugin.git
 
+- Create a new build directory
+
+$ mkdir compiz-accessibility-plugin-build
+
+- Build and install it
+
+$ cd compiz-accesibility-plugin-build
+$ BUILD_GLOBAL=true cmake ../compiz-accessibility-plugin
 $ sudo make install
 
-$ ccsm // Activate it
+- Activate
+
+$ ccsm
+* Select Accesibility plugin and enable it
