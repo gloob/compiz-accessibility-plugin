@@ -46,20 +46,20 @@ AccessibleObject::create (AtspiAccessible *object)
     return ents;
 }
 
-AccessibilityEntity *
+AccessibilityEntity::Ptr
 AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
 {
-    AccessibilityEntity *entity;
+    AccessibilityEntity::Ptr entity;
     int iface_id = (int) enumFromStr(iface);
     
     switch (iface_id) {
 
         case Component:
-            entity = new AccessibilityComponent (object);
+            entity = AccessibilityEntity::Ptr (new AccessibilityComponent (object));
             break;
 
         case Text:
-            entity = new AccessibilityText (object);
+            entity = AccessibilityEntity::Ptr (new AccessibilityText (object));
             break;
 
         case Accessible:
@@ -74,7 +74,7 @@ AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
         case Table:    
         case Value:
         default:
-            entity = NULL;
+            entity = AccessibilityEntity::Ptr ();
             //entity = new AccessibilityEntity (object);
     }
 
@@ -92,13 +92,13 @@ AccessibleObject::enumFromStr (const char *str)
     return Accessible;
 }
 
-AccessibilityEntity *
+AccessibilityEntity::Ptr
 AccessibleObject::get (IfaceType type)
 {
     int index = getIfaceIndex (type);
 
     if (index < 0)
-        return NULL;
+        return AccessibilityEntity::Ptr ();
 
     return ents[index];
 }
@@ -119,7 +119,7 @@ AccessibleObject::getIfaceIndex (IfaceType type)
 {
     for (int i = 0; i < (int) ents.size(); i++)
     {
-        AccessibilityEntity *e = ents[i];
+        AccessibilityEntity::Ptr e = ents[i];
         if (type == e->is())
             return i;
     }

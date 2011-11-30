@@ -53,6 +53,8 @@ class AccessibilityObjectInterface {};
 class AccessibilityEntity
 {
     public:
+        typedef boost::shared_ptr<AccessibilityEntity> Ptr;
+
         AccessibilityEntity (AtspiAccessible *);
         ~AccessibilityEntity ();
 
@@ -124,7 +126,7 @@ class AccessibilityText :
 class AccessibleObject
 {
     public:        
-        typedef std::vector <AccessibilityEntity *> Entities;
+        typedef std::vector <AccessibilityEntity::Ptr> Entities;
         typedef std::vector <IfaceType> Interfaces;
 
         AccessibleObject (AtspiAccessible *);
@@ -132,14 +134,14 @@ class AccessibleObject
         AccessibleObject::Entities
         create (AtspiAccessible *);
 
-        AccessibilityEntity *
+        AccessibilityEntity::Ptr
         get (IfaceType);
 
         bool
         is (IfaceType);
 
     private:
-        static AccessibilityEntity *
+        static AccessibilityEntity::Ptr
         instantiate (AtspiAccessible *, char *);
 
         static IfaceType

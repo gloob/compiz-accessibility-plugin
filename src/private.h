@@ -17,6 +17,9 @@
  *
  */
 
+#include <vector>
+#include <boost/shared_ptr.hpp>
+
 #include <core/core.h>
 #include <core/pluginclasshandler.h>
 
