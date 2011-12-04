@@ -48,8 +48,6 @@ enum IfaceType
     Value,
 };
 
-class AccessibilityObjectInterface {};
-
 class AccessibilityEntity
 {
     public:
@@ -72,8 +70,7 @@ class AccessibilityEntity
 };
 
 class AccessibilityComponent :
-    public AccessibilityEntity,
-    public AccessibilityObjectInterface
+    public AccessibilityEntity
 {
     public:
         AccessibilityComponent (AtspiAccessible *);
@@ -100,8 +97,7 @@ class AccessibilityComponent :
 };
 
 class AccessibilityText :
-    public AccessibilityEntity,
-    public AccessibilityObjectInterface
+    public AccessibilityEntity
 {
     public:
         AccessibilityText (AtspiAccessible *);
