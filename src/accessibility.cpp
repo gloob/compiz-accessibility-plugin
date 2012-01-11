@@ -542,6 +542,8 @@ AccessibilityScreen::handleAccessibilityEvent (AccessibilityEvent *event)
     if (event->detail2)
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "::handleAccessibilityEvent detail2: %d\n", event->detail2);
+
+    delete (event);
 }
 
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
@@ -560,10 +562,10 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
-    /*
+    
     registerEventHandler ("object:", boost::bind (
                     &AccessibilityScreen::handleAccessibilityEvent, this, _1));
-    */
+    
 
     compLogMessage ("Accessibility", CompLogLevelInfo, "Running!\n");
         
