@@ -7,16 +7,12 @@ Build AT-SPI2 infrastructure
 
 (Only needed if your system don't integrate this)
 
-* Install development dependencies
-
-$ sudo apt-get install compiz-dev libboost-dev libboost-all-dev libdbus-1-dev \
-  libdbus-glib-1-dev libxi-dev x11proto-record-dev libxtst-dev cmake
-
 * Build AT-SPI 2 from git
 
 - Dependecies
 
-$ sudo apt-get install gtk-doc-tools
+$ sudo apt-get install compiz-dev libboost-dev libboost-all-dev libdbus-1-dev \
+  libdbus-glib-1-dev libxi-dev x11proto-record-dev libxtst-dev cmake gtk-doc-tools
 
 - Source code
 
@@ -50,6 +46,10 @@ $ /usr/local/libexec/at-spi2-registryd
 
 Build Compiz Accessibility Plugin
 =================================
+
+- Install development dependencies
+
+$ sudo apt-get install cmake compiz-dev libboost-all-dev libatspi2.0-dev
 
 - Clone the source code for the accessibility plugin
 (cloned by default into compiz-accesibility-plugin directory)
