@@ -393,15 +393,19 @@ staticAccessibilityEventCallback (const AtspiEvent *event)
 
     std::list<AccessibilityHandler *>::iterator it;
 
+    AccessibilityEvent *e = new AccessibilityEvent (event);
+    
     for (it = list.begin (); it != list.end (); it++)
     {
         compLogMessage ("Accessibility", CompLogLevelInfo,
                         "Delegating (%s) to -> functor [%d][%s]\n",
                         event->type, 
                         (*it)->id, (*it)->event_type);
-        AccessibilityEvent *e = new AccessibilityEvent (event);
+        
         (*it)->cb (e);
     }
+
+    delete (e);
 }
 
 void
