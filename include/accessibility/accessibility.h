@@ -54,7 +54,7 @@ class AccessibilityEntity
         typedef boost::shared_ptr<AccessibilityEntity> Ptr;
 
         AccessibilityEntity (AtspiAccessible *);
-        ~AccessibilityEntity ();
+        virtual ~AccessibilityEntity ();
 
         virtual bool
         load (AtspiAccessible *);
@@ -80,7 +80,6 @@ class AccessibilityComponent :
 {
     public:
         AccessibilityComponent (AtspiAccessible *);
-        ~AccessibilityComponent ();
 
 		virtual AccessibilityComponent *
 		clone () const;
@@ -94,7 +93,7 @@ class AccessibilityComponent :
         CompPoint
         getSize () const;
 
-        IfaceType
+        virtual IfaceType
         is ();
 
         /* TODO: Implement based in a compiz layer type.
@@ -110,7 +109,6 @@ class AccessibilityText :
 {
     public:
         AccessibilityText (AtspiAccessible *);
-        ~AccessibilityText ();
 
 		virtual AccessibilityText *
 		clone () const;
@@ -124,7 +122,7 @@ class AccessibilityText :
         int
         getCaretOffset ();
 
-        IfaceType
+        virtual IfaceType
         is ();
 
     protected:

@@ -142,6 +142,10 @@ AccessibilityEntity::AccessibilityEntity (AtspiAccessible *object)
     obj = object;
 }
 
+AccessibilityEntity::~AccessibilityEntity () {
+
+}
+
 bool
 AccessibilityEntity::load (AtspiAccessible *object)
 {
