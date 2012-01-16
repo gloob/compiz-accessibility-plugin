@@ -582,22 +582,30 @@ void
 AccessibilityScreen::handleAccessibilityEvent (AccessibilityEvent *event)
 {
 
-    //AccessibleObject *object = event->getAccessibleObject ();
+    AccessibleObject *object = event->getAccessibleObject ();
 
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent name: %s\n", event->name);
-    
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent type: %s\n", event->type);
-    
-    if (event->detail1)
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent detail1: %d\n", event->detail1);
-    if (event->detail2)
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "::handleAccessibilityEvent detail2: %d\n", event->detail2);
+    if (object->is (Component))
+    {
+        
+        AccessibilityComponent::Ptr ac = 
+            boost::static_pointer_cast<AccessibilityComponent>
+            (object->getEntity (Component));
 
-    delete (event);
+        CompRect rect = ac->getExtents ();
+
+        compLogMessage ("Accessibility", CompLogLevelInfo, "Object is Component\n");
+        
+        compLogMessage ("Accessibility", CompLogLevelInfo,
+                        "Component Area [%d, %d] [%d, %d]\n",
+                        rect.x1(), rect.y1(), rect.x2(), rect.y2());
+    }
+    else
+    {
+
+        compLogMessage ("Accessibility", CompLogLevelInfo, "Object is NOT Component\n");
+    }
+
+    delete (object);
 }
 
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
@@ -617,7 +625,7 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
     
-    registerEventHandler ("object:", boost::bind (
+    registerEventHandler ("object:state-changed:", boost::bind (
                     &AccessibilityScreen::handleAccessibilityEvent, this, _1));
     
 
