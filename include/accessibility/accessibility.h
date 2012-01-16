@@ -65,8 +65,14 @@ class AccessibilityEntity
         virtual IfaceType
         is ();
 
+		virtual AccessibilityEntity *
+		clone () const;
+
+		AtspiAccessible *
+		getObject ();
+
     protected:
-        AtspiAccessible   *obj;
+        AtspiAccessible * obj;
 };
 
 class AccessibilityComponent :
@@ -75,6 +81,9 @@ class AccessibilityComponent :
     public:
         AccessibilityComponent (AtspiAccessible *);
         ~AccessibilityComponent ();
+
+		virtual AccessibilityComponent *
+		clone () const;
 
         CompRect
         getExtents () const;
@@ -102,6 +111,9 @@ class AccessibilityText :
     public:
         AccessibilityText (AtspiAccessible *);
         ~AccessibilityText ();
+
+		virtual AccessibilityText *
+		clone () const;
 
         CompRect
         getCharacterExtents (int) const;

@@ -151,11 +151,31 @@ AccessibilityEntity::is ()
     return Accessible;
 }
 
+AccessibilityEntity *
+AccessibilityEntity::clone () const
+{
+	return new AccessibilityEntity (obj);
+}
+
+AtspiAccessible *
+AccessibilityEntity::getObject () {
+	return obj;
+}
+
 
 AccessibilityComponent::AccessibilityComponent (AtspiAccessible *obj) :
     AccessibilityEntity (obj)
 {
+	compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "AccessibilityComponent::AccessibilityComponent (%s)\n", obj->name);
+	
     component = atspi_accessible_get_component (obj);
+}
+
+AccessibilityComponent *
+AccessibilityComponent::clone () const
+{
+	return new AccessibilityComponent (obj);
 }
 
 CompRect
@@ -221,7 +241,16 @@ AccessibilityComponent::is ()
 AccessibilityText::AccessibilityText (AtspiAccessible *obj) :
     AccessibilityEntity (obj)
 {
+	compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "AccessibilityText::AccessibilityText (%s)\n", obj->name);
+	
     text = atspi_accessible_get_text (obj);
+}
+
+AccessibilityText *
+AccessibilityText::clone () const
+{
+	return new AccessibilityText (obj);
 }
 
 CompRect
