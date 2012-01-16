@@ -23,6 +23,9 @@ COMPIZ_PLUGIN_20090315 (accessibility, AccessibilityPluginVTable);
 
 AccessibleObject::AccessibleObject (AtspiAccessible *object)
 {
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "AccessibleObject::AccessibleObject (%s)\n", object->name);
+	
     create (object);
 }
 
@@ -95,6 +98,8 @@ AccessibilityEntity::Ptr
 AccessibleObject::get (IfaceType type)
 {
     int index = getIfaceIndex (type);
+    compLogMessage ("Accessibility", CompLogLevelInfo, "AccessibleObject::get(%s) = %d\n",
+                    type, index);
 
     if (index < 0)
         return AccessibilityEntity::Ptr ();
@@ -129,6 +134,9 @@ AccessibleObject::getIfaceIndex (IfaceType type)
 
 AccessibilityEntity::AccessibilityEntity (AtspiAccessible *object)
 {
+    compLogMessage ("Accessibility", CompLogLevelInfo,
+                    "AccessibilityEntity::AccessibilityEntity (%s)\n", object->name);
+	
     obj = object;
 }
 
