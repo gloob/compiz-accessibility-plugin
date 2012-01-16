@@ -79,6 +79,8 @@ class AccessibilityComponent :
     public AccessibilityEntity
 {
     public:
+        typedef boost::shared_ptr<AccessibilityComponent> Ptr;
+        
         AccessibilityComponent (AtspiAccessible *);
 
 		virtual AccessibilityComponent *
@@ -146,9 +148,12 @@ class AccessibleObject
         bool
         is (IfaceType);
 
+        AccessibilityEntity::Ptr
+        getEntity (IfaceType);
+
     private:
-        static AccessibilityEntity::Ptr
-        instantiate (AtspiAccessible *, char *);
+        AccessibilityEntity::Ptr
+        instantiate (AtspiAccessible *, IfaceType);
 
         static IfaceType
         enumFromStr (const char *);
@@ -157,8 +162,9 @@ class AccessibleObject
         getIfaceIndex (IfaceType);
 
     private:
-        Entities     ents;
-        Interfaces   interfaces;
+        Entities            ents;
+        Interfaces          interfaces;
+        AtspiAccessible *   obj;
 };
 
 class AccessibilityEvent

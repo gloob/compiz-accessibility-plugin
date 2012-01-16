@@ -26,6 +26,8 @@ AccessibleObject::AccessibleObject (AtspiAccessible *object)
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibleObject::AccessibleObject (%s)\n", object->name);
 	
+    obj = object;
+    
     create (object);
 }
 
@@ -52,12 +54,11 @@ AccessibleObject::create (AtspiAccessible *object)
 }
 
 AccessibilityEntity::Ptr
-AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
+AccessibleObject::instantiate (AtspiAccessible *object, IfaceType iface)
 {
     AccessibilityEntity::Ptr entity;
-    int iface_id = (int) enumFromStr(iface);
     
-    switch (iface_id) {
+    switch (iface) {
 
         case Component:
             entity = AccessibilityEntity::Ptr (new AccessibilityComponent (object));
@@ -78,6 +79,8 @@ AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
         case Selection:
         case Table:    
         case Value:
+            break;
+			
         default:
             entity = AccessibilityEntity::Ptr (new AccessibilityEntity (object));
     }
@@ -123,14 +126,19 @@ AccessibleObject::is (IfaceType type)
 int
 AccessibleObject::getIfaceIndex (IfaceType type)
 {
-    for (int i = 0; i < (int) ents.size(); i++)
-    {
-        AccessibilityEntity::Ptr e = ents[i];
-        if (type == e->is())
+    for (int i = 0; i < (int) interfaces.size(); i++)
+    {	
+        if (type == interfaces[i])
             return i;
     }
 
     return -1;
+}
+
+AccessibilityEntity::Ptr
+AccessibleObject::getEntity (IfaceType type)
+{
+    return instantiate (obj, type);
 }
 
 
