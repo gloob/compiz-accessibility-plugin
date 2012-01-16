@@ -74,8 +74,7 @@ AccessibleObject::instantiate (AtspiAccessible *object, char *iface)
         case Table:    
         case Value:
         default:
-            entity = AccessibilityEntity::Ptr ();
-            //entity = new AccessibilityEntity (object);
+            entity = AccessibilityEntity::Ptr (new AccessibilityEntity (object));
     }
 
     return entity;
