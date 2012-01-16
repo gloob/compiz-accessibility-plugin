@@ -41,7 +41,9 @@ AccessibleObject::create (AtspiAccessible *object)
         char *iface = (char *) g_array_index (ifaces, gchar *, i);
 
         interfaces.push_back (enumFromStr (iface));
-        ents.push_back (instantiate (object, iface));
+        // Defer the creation of the AccessibilityEntity structure.
+        // TODO: Create a new method to create it from AccessibleObject.
+        //ents.push_back (instantiate (object, iface));
     }
 
     g_array_free (ifaces, TRUE);
