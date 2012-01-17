@@ -604,8 +604,6 @@ AccessibilityScreen::handleAccessibilityEvent (AccessibilityEvent *event)
 
         compLogMessage ("Accessibility", CompLogLevelInfo, "Object is NOT Component\n");
     }
-
-    delete (object);
 }
 
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
@@ -624,10 +622,10 @@ AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
 
-    
+    /*
     registerEventHandler ("object:state-changed:", boost::bind (
                     &AccessibilityScreen::handleAccessibilityEvent, this, _1));
-    
+    */
 
     compLogMessage ("Accessibility", CompLogLevelInfo, "Running!\n");
         

@@ -110,6 +110,8 @@ class AccessibilityText :
     public AccessibilityEntity
 {
     public:
+        typedef boost::shared_ptr<AccessibilityText> Ptr;
+        
         AccessibilityText (AtspiAccessible *);
 
 		virtual AccessibilityText *
