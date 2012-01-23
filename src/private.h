@@ -18,6 +18,7 @@
  */
 
 #include <vector>
+#include <cstring>
 
 #include <boost/shared_ptr.hpp>
 

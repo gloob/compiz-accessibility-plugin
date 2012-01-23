@@ -397,12 +397,17 @@ staticAccessibilityEventCallback (const AtspiEvent *event)
     
     for (it = list.begin (); it != list.end (); it++)
     {
-        compLogMessage ("Accessibility", CompLogLevelInfo,
-                        "Delegating (%s) to -> functor [%d][%s]\n",
-                        event->type, 
-                        (*it)->id, (*it)->event_type);
+        const char * target_type = (*it)->event_type;
         
-        (*it)->cb (e);
+        if (strncmp (target_type, event->type, strlen(target_type)) == 0)
+        {
+            compLogMessage ("Accessibility", CompLogLevelInfo,
+                            "Delegating (%s) to -> functor [%d][%s]\n",
+                            event->type, 
+                            (*it)->id, (*it)->event_type);
+        
+            (*it)->cb (e);
+        }
     }
 
     delete (e);
