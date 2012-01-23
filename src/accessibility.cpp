@@ -387,6 +387,9 @@ Accessibility::unregisterAll ()
 void
 staticAccessibilityEventCallback (const AtspiEvent *event)
 {
+    if (!event)
+        return;
+    
     ACCESSIBILITY_SCREEN (screen);
 
     AccessibilityHandlerList list = as->list;
