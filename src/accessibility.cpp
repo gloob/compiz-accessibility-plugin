@@ -433,45 +433,20 @@ staticAccessibilityEventDestroyCallback (void *data)
 
 AccessibilityEvent::AccessibilityEvent (const AtspiEvent *event)
 {
-    this->loadEvent (event);    
+    this->event = event;
+    this->object = new AccessibleObject (event->source);
 }
 
 AccessibilityEvent::~AccessibilityEvent ()
 {
-    ;
+    delete (event);
+    delete (object);
 }
 
-bool
-AccessibilityEvent::loadEvent (const AtspiEvent *event)
+const char *
+AccessibilityEvent::getType ()
 {
-
-    this->event = event;
-    this->type = event->type;
-    this->obj = event->source;
-
-    GError *error = NULL;
-    this->name = atspi_accessible_get_name (this->obj, &error);
-
-    if (!this->name)
-        g_error_free (error);    
-    
-    this->detail1 = event->detail1;
-    this->detail2 = event->detail2;
-    //this->any_data = GValue any_data = event->any_data;
-        
-    this->object = new AccessibleObject (this->obj);
-    
-    /*
-    if (object->is (Component))
-    {
-        AccessibilityComponent *e = dynamic_cast<AccessibilityComponent *> (object->get (Component));
-        compLogMessage ("Accessibility", CompLogLevelInfo, "[]: %d\n.", e->is ());
-        CompRect component_rect = e->getExtents ();
-        compLogMessage ("Accessibility", CompLogLevelInfo, "Event type: %s (Component-extents: [%d, %d] [%d, %d])\n", this->name, component_rect.x1(), component_rect.y1(), component_rect.x2(), component_rect.y2());
-    }
-    */
-    
-    return true;
+    return event->type;
 }
 
 AccessibleObject *

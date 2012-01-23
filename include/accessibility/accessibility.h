@@ -172,22 +172,14 @@ class AccessibleObject
 class AccessibilityEvent
 {
     public:
-        //AccessibilityEvent ();
         AccessibilityEvent (const AtspiEvent *);
         ~AccessibilityEvent ();
 
-        bool
-        loadEvent (const AtspiEvent *);
+        const char *
+        getType ();
 
         AccessibleObject *
         getAccessibleObject ();
-
-    public:
-        AtspiAccessible   *obj;
-        char              *name;
-        char              *type;
-        int                detail1;
-        int                detail2;
 
     private:
         const AtspiEvent  *event;
