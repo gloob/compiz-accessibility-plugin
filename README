@@ -49,7 +49,7 @@ Build Compiz Accessibility Plugin
 
 - Install development dependencies
 
-$ sudo apt-get install cmake compiz-dev libboost-all-dev libatspi2.0-dev
+$ sudo apt-get install cmake compiz-dev libboost-all-dev libatspi2.0-dev xsltproc
 
 - Clone the source code for the accessibility plugin
 (cloned by default into compiz-accesibility-plugin directory)
