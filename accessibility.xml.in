@@ -9,9 +9,9 @@
                 <plugin>opengl</plugin>
                 <plugin>composite</plugin>
                 <plugin>decor</plugin>
-            </relation>	
+            </relation>
         </deps>
         <options>
-        </options>		
+        </options>
     </plugin>
 </compiz>

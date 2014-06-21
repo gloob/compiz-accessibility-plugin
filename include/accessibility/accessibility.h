@@ -73,20 +73,20 @@ class AccessibilityComponent :
 	typedef boost::shared_ptr<AccessibilityComponent> Ptr;
 
 	AccessibilityComponent (AtspiAccessible *);
-	
+
 	virtual IfaceType is ();
 
 	CompRect getExtents () const;
 	CompPoint getPosition () const;
 	CompPoint getSize () const;
-	
+
 	/* TODO: Implement based in a compiz layer type.
 	CompLayer
 	getLayer ();
 	*/
 
     protected:
-	
+
 	AtspiComponent    *component;
 };
 
@@ -96,7 +96,7 @@ class AccessibilityText :
     public:
 
 	typedef boost::shared_ptr<AccessibilityText> Ptr;
-        
+
 	AccessibilityText (AtspiAccessible *);
 
 	virtual IfaceType is ();
@@ -141,13 +141,13 @@ class AccessibleObjectInterfaceTypes
 
 class AccessibleObject
 {
-    public:        
+    public:
 
 	typedef std::vector <AccessibilityEntity::Ptr> Entities;
 	typedef std::vector <IfaceType> Interfaces;
 
 	AccessibleObject (AtspiAccessible *);
-        
+
 	AccessibleObject::Entities create (AtspiAccessible *);
 	AccessibilityEntity::Ptr get (IfaceType);
 	bool is (IfaceType);
@@ -195,6 +195,6 @@ class Accessibility
 	void unregisterAll ();
 
     friend class AccessibilityScreen;
-};      
+};
 
 #endif // _ACCESSIBILITY_H

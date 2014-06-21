@@ -61,7 +61,7 @@ class AccessibilityScreen :
 	void handleAccessibilityEvent (AccessibilityEvent *);
 
     public:
-        
+
 	CompScreen *screen;
 	AccessibilityHandlerList list;
 	int lastEventHandler;
@@ -81,5 +81,5 @@ class AccessibilityPluginVTable :
     public:
 
 	bool init();
-        
+
 };

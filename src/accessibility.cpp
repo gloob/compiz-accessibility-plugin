@@ -29,7 +29,7 @@ AccessibleObject::AccessibleObject (AtspiAccessible *object)
                     "AccessibleObject::AccessibleObject (%s)\n", object->name);
 
     obj = object;
-    
+
     create (object);
 }
 
@@ -60,7 +60,7 @@ AccessibilityEntity::Ptr
 AccessibleObject::instantiate (AtspiAccessible *object, IfaceType iface)
 {
     AccessibilityEntity::Ptr entity;
-    
+
     switch (iface)
     {
 
@@ -81,10 +81,10 @@ AccessibleObject::instantiate (AtspiAccessible *object, IfaceType iface)
         case Hyperlink:
         case Image:
         case Selection:
-        case Table:    
+        case Table:
         case Value:
             break;
-			
+
         default:
             entity = AccessibilityEntity::Ptr (new AccessibilityEntity (object));
     }
@@ -120,7 +120,7 @@ int
 AccessibleObject::getIfaceIndex (IfaceType type)
 {
     for (int i = 0; i < (int) interfaces.size(); i++)
-    {	
+    {
         if (type == interfaces[i])
             return i;
     }
@@ -136,7 +136,7 @@ AccessibleObject::getEntity (IfaceType type)
 
 
 AccessibilityEntity::AccessibilityEntity (AtspiAccessible *object)
-{	
+{
     obj = object;
 }
 
@@ -173,19 +173,19 @@ AccessibilityComponent::AccessibilityComponent (AtspiAccessible *obj) :
 {
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityComponent::AccessibilityComponent (%s)\n", obj->name);
-	
+
     component = atspi_accessible_get_component (obj);
 }
 
 CompRect
 AccessibilityComponent::getExtents () const
-{   
+{
     CompRect rect;
     GError *error = NULL;
 
     AtspiRect *component_rect =
-        atspi_component_get_extents (component, ATSPI_COORD_TYPE_SCREEN, &error);   
-    
+        atspi_component_get_extents (component, ATSPI_COORD_TYPE_SCREEN, &error);
+
     if (!component_rect)
         g_error_free (error);
     else
@@ -210,7 +210,7 @@ AccessibilityComponent::getPosition () const
         g_error_free (error);
     else
         position = CompPoint (component_position->x, component_position->y);
-       
+
     return position;
 }
 
@@ -242,7 +242,7 @@ AccessibilityText::AccessibilityText (AtspiAccessible *obj) :
 {
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityText::AccessibilityText (%s)\n", obj->name);
-	
+
     text = atspi_accessible_get_text (obj);
 }
 
@@ -290,7 +290,7 @@ int
 AccessibilityText::getCaretOffset ()
 {
     GError *error = NULL;
-    
+
     int caret_offset = atspi_text_get_caret_offset (text, &error);
 
     if (!caret_offset)
@@ -328,7 +328,7 @@ staticAccessibilityEventCallback (const AtspiEvent *event)
 {
     if (!event)
         return;
-    
+
     ACCESSIBILITY_SCREEN (screen);
 
     AccessibilityHandlerList list = as->list;
@@ -336,18 +336,18 @@ staticAccessibilityEventCallback (const AtspiEvent *event)
     std::list<AccessibilityHandler *>::iterator it;
 
     AccessibilityEvent *e = new AccessibilityEvent (event);
-    
+
     for (it = list.begin (); it != list.end (); it++)
     {
         const char * target_type = (*it)->event_type;
-        
+
         if (strncmp (target_type, event->type, strlen(target_type)) == 0)
         {
             compLogMessage ("Accessibility", CompLogLevelInfo,
                             "Delegating (%s) to -> functor [%d][%s]\n",
-                            event->type, 
+                            event->type,
                             (*it)->id, (*it)->event_type);
-        
+
             (*it)->cb (e);
         }
     }
@@ -416,14 +416,14 @@ AccessibilityScreen::registerEventHandler (const char *event_type,
     AtspiEventListener *event_listener =
         atspi_event_listener_new_simple (staticAccessibilityEventCallback,
                                          staticAccessibilityEventDestroyCallback);
-    
+
     if (!atspi_event_listener_register (event_listener, event_type, &error))
     {
         compLogMessage ("Accessibility", CompLogLevelInfo,
                         "Cannot create event listener (%s). [%s]\n",
-                        event_type, 
+                        event_type,
                         error->message);
-        
+
         g_error_free (error);
         error = NULL;
     }
@@ -436,20 +436,20 @@ AccessibilityScreen::registerEventHandler (const char *event_type,
     list.push_front (hnd);
 
     compLogMessage ("Accessibility", CompLogLevelInfo, "Registered new listener (%d): (%s))\n", hnd->id, hnd->event_type);
-    
+
     return hnd->id;
 }
 
 void
 AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
 {
-    
+
     std::list<AccessibilityHandler *>::iterator it;
     AccessibilityHandler *h;
 
     if (list.size() < 0)
         return;
-        
+
     for (it = list.begin (); it != list.end (); it++)
         if ((*it)->id == handler)
             break;
@@ -466,7 +466,7 @@ AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
                         "Cannot unregister event listener (%s). [%s]\n",
                         (*it)->event_type,
                         error->message);
-        
+
         g_error_free (error);
         error = NULL;
     }
@@ -474,7 +474,7 @@ AccessibilityScreen::unregisterEventHandler (AccessibilityEventHandler handler)
     // Free and erase from the list.
     h = (*it);
     delete (h);
-    
+
     list.erase (it);
 }
 
