@@ -21,11 +21,13 @@
 
 COMPIZ_PLUGIN_20090315 (accessibility, AccessibilityPluginVTable);
 
+AccessibleObjectInterfaceTypes AccessibleObject::accessibleInterfaceTypes;
+
 AccessibleObject::AccessibleObject (AtspiAccessible *object)
 {
     compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibleObject::AccessibleObject (%s)\n", object->name);
-	
+
     obj = object;
     
     create (object);
@@ -38,11 +40,12 @@ AccessibleObject::create (AtspiAccessible *object)
 
     int len = (int) ifaces->len;
 
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++)
+    {
 
         char *iface = (char *) g_array_index (ifaces, gchar *, i);
 
-        interfaces.push_back (enumFromStr (iface));
+        interfaces.push_back (accessibleInterfaceTypes.get (iface));
         // Defer the creation of the AccessibilityEntity structure.
         // TODO: Create a new method to create it from AccessibleObject.
         //ents.push_back (instantiate (object, iface));
@@ -58,7 +61,8 @@ AccessibleObject::instantiate (AtspiAccessible *object, IfaceType iface)
 {
     AccessibilityEntity::Ptr entity;
     
-    switch (iface) {
+    switch (iface)
+    {
 
         case Component:
             entity = AccessibilityEntity::Ptr (new AccessibilityComponent (object));
@@ -86,17 +90,6 @@ AccessibleObject::instantiate (AtspiAccessible *object, IfaceType iface)
     }
 
     return entity;
-}
-
-IfaceType
-AccessibleObject::enumFromStr (const char *str)
-{
-
-    for (int i = 0; i < NUM_IFACES_SUPPORTED; i++)
-        if (!strcmp (IfaceTypeStr[i], str))
-            return (IfaceType) i;
-    
-    return Accessible;
 }
 
 AccessibilityEntity::Ptr
@@ -143,10 +136,7 @@ AccessibleObject::getEntity (IfaceType type)
 
 
 AccessibilityEntity::AccessibilityEntity (AtspiAccessible *object)
-{
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "AccessibilityEntity::AccessibilityEntity (%s)\n", object->name);
-	
+{	
     obj = object;
 }
 
@@ -172,31 +162,19 @@ AccessibilityEntity::is ()
     return Accessible;
 }
 
-AccessibilityEntity *
-AccessibilityEntity::clone () const
-{
-	return new AccessibilityEntity (obj);
-}
-
 AtspiAccessible *
 AccessibilityEntity::getObject () {
-	return obj;
+    return obj;
 }
 
 
 AccessibilityComponent::AccessibilityComponent (AtspiAccessible *obj) :
     AccessibilityEntity (obj)
 {
-	compLogMessage ("Accessibility", CompLogLevelInfo,
+    compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityComponent::AccessibilityComponent (%s)\n", obj->name);
 	
     component = atspi_accessible_get_component (obj);
-}
-
-AccessibilityComponent *
-AccessibilityComponent::clone () const
-{
-	return new AccessibilityComponent (obj);
 }
 
 CompRect
@@ -262,16 +240,10 @@ AccessibilityComponent::is ()
 AccessibilityText::AccessibilityText (AtspiAccessible *obj) :
     AccessibilityEntity (obj)
 {
-	compLogMessage ("Accessibility", CompLogLevelInfo,
+    compLogMessage ("Accessibility", CompLogLevelInfo,
                     "AccessibilityText::AccessibilityText (%s)\n", obj->name);
 	
     text = atspi_accessible_get_text (obj);
-}
-
-AccessibilityText *
-AccessibilityText::clone () const
-{
-	return new AccessibilityText (obj);
 }
 
 CompRect
@@ -331,39 +303,6 @@ IfaceType
 AccessibilityText::is ()
 {
     return Text;
-}
-
-
-Accessibility::Accessibility ()
-{
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "Accessibility constructor called.\n");
-
-}
-
-Accessibility::~Accessibility ()
-{
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "Accessibility destructor called.\n");
-
-}
-
-bool
-Accessibility::start ()
-{
-    return true;
-}
-
-bool
-Accessibility::stop ()
-{
-    return true;
-}
-
-bool
-Accessibility::active ()
-{
-    return true;
 }
 
 bool
@@ -430,7 +369,7 @@ staticAccessibilityEventDestroyCallback (void *data)
         compLogMessage ("Accessibility", CompLogLevelInfo,
                         "Delegating destroy to -> functor [%d][%s]\n",
                         (*it)->id);
-        // TODO: Implement callback mechanism for handles destroy.
+        // TODO: Implement callback mechanism for destruction handling.
     }
 }
 
@@ -561,65 +500,16 @@ AccessibilityScreen::unregisterAll ()
     }
 }
 
-void
-AccessibilityScreen::handleAccessibilityEvent (AccessibilityEvent *event)
-{
-
-    AccessibleObject *object = event->getAccessibleObject ();
-
-    if (object->is (Component))
-    {
-        
-        AccessibilityComponent::Ptr ac = 
-            boost::static_pointer_cast<AccessibilityComponent>
-            (object->getEntity (Component));
-
-        CompRect rect = ac->getExtents ();
-
-        compLogMessage ("Accessibility", CompLogLevelInfo, "Object is Component\n");
-        
-        compLogMessage ("Accessibility", CompLogLevelInfo,
-                        "Component Area [%d, %d] [%d, %d]\n",
-                        rect.x1(), rect.y1(), rect.x2(), rect.y2());
-    }
-    else
-    {
-
-        compLogMessage ("Accessibility", CompLogLevelInfo, "Object is NOT Component\n");
-    }
-}
-
 AccessibilityScreen::AccessibilityScreen (CompScreen *screen) :
     PluginClassHandler <AccessibilityScreen, CompScreen> (screen),
     screen (screen),
     lastEventHandler (0)
 {
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "AccessibilityScreen called.\n");
-
     /* TODO: Check atspi_init() code. There's a memory leak when registryd
      * isn't running.
      */
+    /*
     int atspi_status = atspi_init ();
-	
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "AccessibilityScreen: AT-SPI init() %d.\n", atspi_status);
-
-    /*
-    registerEventHandler ("object:state-changed:", boost::bind (
-                    &AccessibilityScreen::handleAccessibilityEvent, this, _1));
-    */
-
-    compLogMessage ("Accessibility", CompLogLevelInfo, "Running!\n");
-        
-    /*
-    // Launch main event atspi loop
-    // This is not needed because compiz private screen launches its own
-    // Glib MainLoop
-    */
-    /*
-
-    atspi_event_main();
     */
 }
 
@@ -627,12 +517,6 @@ AccessibilityScreen::~AccessibilityScreen ()
 {
 
     unregisterAll ();
-    
-    //atspi_event_quit();
-    int atspi_status = atspi_exit ();
-
-    compLogMessage ("Accessibility", CompLogLevelInfo,
-                    "~AccessibilityScreen called. Exit value: %d\n", atspi_status);
 }
 
 bool

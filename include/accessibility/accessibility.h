@@ -28,9 +28,6 @@ extern "C" {
 }
 #endif
 
-/*
- * Class hierarchy that hold and manage differents accessible objects.
- */
 enum IfaceType
 {
     Accessible = 0,
@@ -51,140 +48,139 @@ enum IfaceType
 class AccessibilityEntity
 {
     public:
-        typedef boost::shared_ptr<AccessibilityEntity> Ptr;
 
-        AccessibilityEntity (AtspiAccessible *);
-        virtual ~AccessibilityEntity ();
+	typedef boost::shared_ptr<AccessibilityEntity> Ptr;
 
-        virtual bool
-        load (AtspiAccessible *);
+	AccessibilityEntity (AtspiAccessible *);
+	virtual ~AccessibilityEntity ();
 
-        virtual bool
-        contains (AccessibilityEntity *, int, int);
+	virtual IfaceType is ();
+	virtual bool load (AtspiAccessible *);
+	virtual bool contains (AccessibilityEntity *, int, int);
 
-        virtual IfaceType
-        is ();
-
-		virtual AccessibilityEntity *
-		clone () const;
-
-		AtspiAccessible *
-		getObject ();
+	AtspiAccessible *getObject ();
 
     protected:
-        AtspiAccessible * obj;
+
+	AtspiAccessible *obj;
 };
 
 class AccessibilityComponent :
     public AccessibilityEntity
 {
     public:
-        typedef boost::shared_ptr<AccessibilityComponent> Ptr;
-        
-        AccessibilityComponent (AtspiAccessible *);
 
-		virtual AccessibilityComponent *
-		clone () const;
+	typedef boost::shared_ptr<AccessibilityComponent> Ptr;
 
-        CompRect
-        getExtents () const;
-        
-        CompPoint
-        getPosition () const;
+	AccessibilityComponent (AtspiAccessible *);
+	
+	virtual IfaceType is ();
 
-        CompPoint
-        getSize () const;
+	CompRect getExtents () const;
+	CompPoint getPosition () const;
+	CompPoint getSize () const;
+	
+	/* TODO: Implement based in a compiz layer type.
+	CompLayer
+	getLayer ();
+	*/
 
-        virtual IfaceType
-        is ();
-
-        /* TODO: Implement based in a compiz layer type.
-        CompLayer
-        getLayer ();
-        */
     protected:
-        AtspiComponent    *component;
+	
+	AtspiComponent    *component;
 };
 
 class AccessibilityText :
     public AccessibilityEntity
 {
     public:
-        typedef boost::shared_ptr<AccessibilityText> Ptr;
+
+	typedef boost::shared_ptr<AccessibilityText> Ptr;
         
-        AccessibilityText (AtspiAccessible *);
+	AccessibilityText (AtspiAccessible *);
 
-		virtual AccessibilityText *
-		clone () const;
+	virtual IfaceType is ();
 
-        CompRect
-        getCharacterExtents (int) const;
-
-        CompRect
-        getRangeExtents (int) const;
-
-        int
-        getCaretOffset ();
-
-        virtual IfaceType
-        is ();
+	CompRect getCharacterExtents (int) const;
+	CompRect getRangeExtents (int) const;
+	int getCaretOffset ();
 
     protected:
-        AtspiText          *text;
+
+	AtspiText          *text;
 };
+
+class AccessibleObjectInterfaceTypes
+{
+    public:
+
+	AccessibleObjectInterfaceTypes ()
+	{
+	    mMap["Accessible"] = Accessible;
+	    mMap["Action"] = Action;
+	    mMap["Collection"] = Collection;
+	    mMap["Component"] = Component;
+	    mMap["Document"] = Document;
+	    mMap["EditableText"] = EditableText;
+	    mMap["Hypertext"] = Hypertext;
+	    mMap["Hyperlink"] = Hyperlink;
+	    mMap["Image"] = Image;
+	    mMap["Selection"] = Selection;
+	    mMap["Table"] = Table;
+	    mMap["Text"] = Text;
+	    mMap["Value"] = Value;
+	}
+
+	IfaceType get (const std::string &t) { return mMap[t]; }
+
+    private:
+
+	std::map <std::string, IfaceType> mMap;
+};
+
 
 class AccessibleObject
 {
     public:        
-        typedef std::vector <AccessibilityEntity::Ptr> Entities;
-        typedef std::vector <IfaceType> Interfaces;
 
-        AccessibleObject (AtspiAccessible *);
+	typedef std::vector <AccessibilityEntity::Ptr> Entities;
+	typedef std::vector <IfaceType> Interfaces;
+
+	AccessibleObject (AtspiAccessible *);
         
-        AccessibleObject::Entities
-        create (AtspiAccessible *);
-
-        AccessibilityEntity::Ptr
-        get (IfaceType);
-
-        bool
-        is (IfaceType);
-
-        AccessibilityEntity::Ptr
-        getEntity (IfaceType);
+	AccessibleObject::Entities create (AtspiAccessible *);
+	AccessibilityEntity::Ptr get (IfaceType);
+	bool is (IfaceType);
+	AccessibilityEntity::Ptr getEntity (IfaceType);
 
     private:
-        AccessibilityEntity::Ptr
-        instantiate (AtspiAccessible *, IfaceType);
 
-        static IfaceType
-        enumFromStr (const char *);
-
-        int
-        getIfaceIndex (IfaceType);
+	AccessibilityEntity::Ptr instantiate (AtspiAccessible *, IfaceType);
+	int getIfaceIndex (IfaceType);
 
     private:
-        Entities            ents;
-        Interfaces          interfaces;
-        AtspiAccessible *   obj;
+
+	Entities            ents;
+	Interfaces          interfaces;
+	AtspiAccessible *   obj;
+
+	static AccessibleObjectInterfaceTypes accessibleInterfaceTypes;
 };
 
 class AccessibilityEvent
 {
     public:
-        AccessibilityEvent (const AtspiEvent *);
-        ~AccessibilityEvent ();
 
-        const char *
-        getType ();
+	AccessibilityEvent (const AtspiEvent *);
+	~AccessibilityEvent ();
 
-        AccessibleObject *
-        getAccessibleObject ();
+	const char *getType ();
+	AccessibleObject *getAccessibleObject ();
 
     private:
-        const AtspiEvent  *event;
-        AccessibleObject  *object;
 
+	const AtspiEvent  *event;
+	AccessibleObject  *object;
 };
 
 typedef boost::function<void (AccessibilityEvent *)> AccessibilityEventCallback;
@@ -193,23 +189,10 @@ class Accessibility
 {
     public:
 
-        Accessibility ();
-        ~Accessibility ();
+	Accessibility () {}
 
-        bool
-        start ();
-
-        bool
-        stop ();
-
-        bool
-        active ();
-
-        bool
-        registerEventHandler (const char *, AccessibilityEventCallback);
-
-        void
-        unregisterAll ();
+	bool registerEventHandler (const char *, AccessibilityEventCallback);
+	void unregisterAll ();
 
     friend class AccessibilityScreen;
 };      

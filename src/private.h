@@ -30,29 +30,11 @@
 #include <accessibility/accessibility.h>
 #include "accessibility_options.h"
 
-static const char *IfaceTypeStr[] =
-{
-    "Accessible",
-    "Action",
-    "Collection",
-    "Component",
-    "Document",
-    "EditableText",
-    "Hypertext",
-    "Hyperlink",
-    "Image",
-    "Selection",
-    "Table",
-    "Text",
-    "Value",
-};
-
-#define NUM_IFACES_SUPPORTED 13
-
 typedef int AccessibilityEventHandler;
 
 /* Struct of a handler and list of handlers */
-struct AccessibilityHandler {
+struct AccessibilityHandler
+{
     const char *                event_type;
     AtspiEventListener *        event_listener;
     AccessibilityEventCallback  cb;
@@ -68,35 +50,25 @@ class AccessibilityScreen :
 {
     public:
 
-        AccessibilityScreen (CompScreen *);
-        ~AccessibilityScreen ();
+	AccessibilityScreen (CompScreen *);
+	~AccessibilityScreen ();
 
-        CompScreen *screen;
-
-        AccessibilityEventHandler
-        registerEventHandler (const char * event_type,
-                              AccessibilityEventCallback cb);
-        
-        void
-        unregisterEventHandler (AccessibilityEventHandler handler);
-
-        bool
-        unregisterByType (const char * event_type);
-
-        void
-        unregisterAll ();
-
-        void
-        handleAccessibilityEvent (AccessibilityEvent *);
+	AccessibilityEventHandler registerEventHandler (const char * event_type,
+						        AccessibilityEventCallback cb);
+	void unregisterEventHandler (AccessibilityEventHandler handler);
+	bool unregisterByType (const char * event_type);
+	void unregisterAll ();
+	void handleAccessibilityEvent (AccessibilityEvent *);
 
     public:
         
-        AccessibilityHandlerList list;
-        int lastEventHandler;
+	CompScreen *screen;
+	AccessibilityHandlerList list;
+	int lastEventHandler;
 
     protected:
 
-        AtspiEventListener *listener;
+	AtspiEventListener *listener;
 
 };
 
@@ -108,6 +80,6 @@ class AccessibilityPluginVTable :
 {
     public:
 
-        bool init();
+	bool init();
         
 };
